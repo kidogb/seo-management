@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([[17],{"J+/D":function(n,t,e){"use strict";e.r(t);var r=e("q1tI"),i=e.n(r);t["default"]=function(){return i.a.createElement("div",null,"Product registration")}}}]);
