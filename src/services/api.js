@@ -10,7 +10,11 @@ export async function queryActivities() {
 }
 
 export async function queryProduct(params) {
-  return request(`/commonapis/product?${stringify(params)}`);
+  return request(`/commonapis/products?${stringify(params)}`);
+}
+
+export async function queryProductDetail(id) {
+  return request(`/commonapis/products/44/`);
 }
 
 export async function removeRule(params) {

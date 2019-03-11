@@ -86,6 +86,13 @@ export default {
   //     pathRewrite: { '^/server': '' },
   //   },
   // },
+   proxy: {
+    '/commonapis/': {
+      target: 'http://localhost:3000/',
+      changeOrigin: true,
+      // pathRewrite: { '^/commonapis': '' },
+    },
+  },
   ignoreMomentLocale: true,
   lessLoaderOptions: {
     javascriptEnabled: true,

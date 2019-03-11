@@ -27,6 +27,7 @@ export default {
   'menu.production': 'Sản phẩm',
   'menu.production.list': 'Danh sách sản phẩm',
   'menu.production.registration': 'Thêm sản phẩm',
+  'menu.production.detail': 'Thông tin',
   'menu.customer': 'Khách hàng',
   'menu.customer.list': 'Danh sách khách hàng',
   'menu.customer.registration': 'Thêm khách hàng',

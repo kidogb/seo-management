@@ -46,6 +46,12 @@ export default [
             component: './Production/List',
           },
           {
+            path: '/production/:id/detail',
+            name: 'detail',
+            component: './Production/Detail',
+            hideInMenu: true,
+          },
+          {
             path: '/production/registration',
             name: 'registration',
             component: './Production/Registration',
