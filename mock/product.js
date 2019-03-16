@@ -148,6 +148,6 @@ function postRule(req, res, u, b) {
 
 export default {
   'POST /api/rule': postRule,
-  'GET /commonapis/products': getProduct,
-  'GET /commonapis/products/44': getProductDetail,
+  'GET /commonapis/product': getProduct,
+  'GET /commonapis/product/44': getProductDetail,
 };

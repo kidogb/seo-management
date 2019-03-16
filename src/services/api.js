@@ -10,11 +10,21 @@ export async function queryActivities() {
 }
 
 export async function queryProduct(params) {
-  return request(`/commonapis/products?${stringify(params)}`);
+  const option = {
+    headers: {
+      'Authorization': 'Token 01a4688b38ea3bba5e6158bbd6a9af7a961c8b63',
+    }
+  }
+  return request(`/commonapis/products?${stringify(params)}`, option);
 }
 
 export async function queryProductDetail(id) {
-  return request(`/commonapis/products/44/`);
+  const option = {
+    headers: {
+      'Authorization': 'Token 01a4688b38ea3bba5e6158bbd6a9af7a961c8b63',
+    }
+  }
+  return request(`/commonapis/products/${id}`, option);
 }
 
 export async function removeRule(params) {
@@ -23,16 +33,6 @@ export async function removeRule(params) {
     body: {
       ...params,
       method: 'delete',
-    },
-  });
-}
-
-export async function addRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    body: {
-      ...params,
-      method: 'post',
     },
   });
 }
@@ -47,9 +47,10 @@ export async function updateRule(params = {}) {
   });
 }
 
-export async function fakeSubmitForm(params) {
-  return request('/api/forms', {
+export async function addProduct(params) {
+  return request('/commonapis/products', {
     method: 'POST',
+    headers: {'Authorization': 'Token 01a4688b38ea3bba5e6158bbd6a9af7a961c8b63'},
     body: params,
   });
 }

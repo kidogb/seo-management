@@ -124,10 +124,10 @@ class TableList extends PureComponent {
       title: 'Hành động',
       key: 'product_action',
       fixed: 'right',
-      render: (text, record) => (
+      render: (record) => (
           <Button.Group>
-            <Button type="primary" icon="edit" onClick={() => console.log("Go to edit")} />
-            <Button type="primary" icon="delete" onClick={() => console.log("Go to delete")} />
+            <Button type="primary" ghost icon="eye" onClick={() => this.previewItem(record.id)} />
+            <Button type="danger" icon="delete" ghost onClick={() => console.log("Go to delete")} />
           </Button.Group>
       ),
     },
@@ -218,6 +218,10 @@ class TableList extends PureComponent {
       selectedRows: rows,
     });
   };
+
+  handleAddProduct = () => {
+    router.push(`/production/registration`);
+  }
 
   renderSimpleForm() {
     const {
@@ -315,7 +319,7 @@ class TableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.handleAddProduct()}>
                 Thêm sản phẩm
               </Button>
             </div>

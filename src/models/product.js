@@ -1,5 +1,6 @@
-import { removeRule, addRule, updateRule, queryProduct, queryProductDetail } from '@/services/api';
-
+import { removeRule, addRule, updateRule, queryProduct, queryProductDetail, addProduct } from '@/services/api';
+import {routerRedux} from 'dva/router';
+import { message } from 'antd';
 export default {
   namespace: 'product',
 
@@ -26,12 +27,15 @@ export default {
       });
     },
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
+      const response = yield call(addProduct, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback();
+      message.success('Thêm sản phẩm thành công');
+      yield put (
+        routerRedux.push(`/production/list`));
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);

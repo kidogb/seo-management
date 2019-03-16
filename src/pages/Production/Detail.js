@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -41,9 +42,10 @@ class ProductDetailForm extends PureComponent {
   };
   componentDidMount() {
     const { dispatch } = this.props;
+    const id = this.props.match.params.id; 
     dispatch({
       type: 'product/fetchDetail',
-      payload: 1,
+      payload: id,
     });
   }
   getProductImgs = ps_imgs => {
@@ -60,6 +62,9 @@ class ProductDetailForm extends PureComponent {
       }
       return defaultFileList;
     }
+  goBackToListScreen = id => {
+      router.push(`/production/list`);
+  };
   render() {
     const { submitting } = this.props;
     const {
@@ -128,13 +133,13 @@ class ProductDetailForm extends PureComponent {
                 <Input key= "ps_days_to_ship" placeholder="Thời gian ship" value={data.ps_days_to_ship} readOnly/>
             </FormItem>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              {/* <Button type="primary" htmlType="submit" loading={submitting}>
                 Chỉnh sửa
-              </Button>
+              </Button> */}
               <Button type="danger" style={{ marginLeft: 8 }}>
                 Xoá sản phẩm
               </Button>
-              <Button style={{ marginLeft: 8 }}>
+              <Button style={{ marginLeft: 8 }} onClick={()=>this.goBackToListScreen()}>
                 Quay lại
               </Button>
             </FormItem>
