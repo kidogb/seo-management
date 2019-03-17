@@ -108,8 +108,8 @@ export async function updateFakeList(params) {
   });
 }
 
-export async function fakeAccountLogin(params) {
-  return request('/api/login/account', {
+export async function accountLogin(params) {
+  return request('/commonapis/api-token-auth/', {
     method: 'POST',
     body: params,
   });
