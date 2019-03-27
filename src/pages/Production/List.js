@@ -80,14 +80,14 @@ class TableList extends PureComponent {
       width: 400,
       render: ps_imgs => {
         let defaultFileList = [];
-        ps_imgs.map(ps_img => {
-          defaultFileList.push({
-            uid: ps_img.id,
-            name: ps_img.title,
-            // status: 'done',
-            url: ps_img.file,
-          });
-        });
+        // ps_imgs.map(ps_img => {
+        //   defaultFileList.push({
+        //     uid: ps_img.id,
+        //     name: ps_img.title,
+        //     // status: 'done',
+        //     url: ps_img.file,
+        //   });
+        // });
         return <PictureWall defaultFileList={defaultFileList} />;
       },
     },

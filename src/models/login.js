@@ -4,12 +4,12 @@ import { accountLogin, getFakeCaptcha } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
+import token from '../utils/token';
 
 export default {
   namespace: 'login',
 
   state: {
-    token: undefined,
   },
 
   effects: {
@@ -21,7 +21,8 @@ export default {
         payload: response,
       });
       // Login successfully
-      if (response.token) {
+      if (response && response.token) {
+        token.save(response.token);
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -47,6 +48,7 @@ export default {
     },
 
     *logout(_, { put }) {
+      token.remove(); // remove token
       yield put({
         type: 'changeLoginStatus',
         payload: {
@@ -68,10 +70,9 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      setAuthority((payload && payload.currentAuthority)?payload.currentAuthority:'guest');
       return {
         ...state,
-        token: payload.token? payload.token : '',
       };
     },
   },
