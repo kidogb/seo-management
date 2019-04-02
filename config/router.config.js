@@ -75,6 +75,8 @@ export default [
         path: '/customer',
         name: 'customer',
         icon: 'plus-square',
+        hideInMenu: true,
+
         routes: [
           {
             path: '/customer/list',
