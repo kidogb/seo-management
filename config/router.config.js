@@ -46,6 +46,30 @@ export default [
           }
         ]
       },
+      //sample
+      {
+        path: '/sample',
+        name: 'sample',
+        icon: 'plus-square',
+        routes: [
+          {
+            path: '/sample/list',
+            name: 'list',
+            component: './Sample/List',
+          },
+          {
+            path: '/sample/:id/detail',
+            name: 'detail',
+            component: './Sample/Detail',
+            hideInMenu: true,
+          },
+          {
+            path: '/sample/registration',
+            name: 'registration',
+            component: './Sample/Registration',
+          }
+        ]
+      },
       //customer
       {
         path: '/customer',

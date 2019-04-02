@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { accountLogin, getFakeCaptcha } from '@/services/api';
+import { accountLogin } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
@@ -10,6 +10,7 @@ export default {
   namespace: 'login',
 
   state: {
+    currentAuthority: 'guest',
   },
 
   effects: {
@@ -43,10 +44,6 @@ export default {
       }
     },
 
-    *getCaptcha({ payload }, { call }) {
-      yield call(getFakeCaptcha, payload);
-    },
-
     *logout(_, { put }) {
       token.remove(); // remove token
       yield put({
@@ -70,7 +67,7 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority((payload && payload.currentAuthority)?payload.currentAuthority:'guest');
+      setAuthority((payload && payload.user)?payload.user.user_type:'guest');
       return {
         ...state,
       };

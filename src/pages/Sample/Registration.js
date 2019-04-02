@@ -30,7 +30,7 @@ const { TextArea } = Input;
   submitting: loading.effects['product/add'],
 }))
 @Form.create()
-class ProductRegistration extends PureComponent {
+class SampleRegistration extends PureComponent {
   transformSwitchValue = value => {
     if (value) return "Đóng";
     else return "Mở";
@@ -253,4 +253,4 @@ class ProductRegistration extends PureComponent {
   }
 }
 
-export default ProductRegistration;
+export default SampleRegistration;

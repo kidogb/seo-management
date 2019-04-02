@@ -1,26 +1,21 @@
-import { removeRule, addRule, updateRule, queryProduct, queryProductDetail, addProduct } from '@/services/api';
+import { getUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
-  namespace: 'product',
+  namespace: 'fileUpload',
 
   state: {
     data: {
-      list: [],
-      pagination: {},
+      results: [],
+      count:0,
+      previous: null,
+      next: null,
     },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryProduct, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-    *fetchDetail({ payload }, { call, put }) {
-      const response = yield call(queryProductDetail, payload);
+      const response = yield call(getUploadFile, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -33,19 +28,12 @@ export default {
         payload: response,
       });
       if (callback) callback();
+      message.success('Thêm sản phẩm thành công');
       yield put (
         routerRedux.push(`/production/list`));
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
       yield put({
         type: 'save',
         payload: response,

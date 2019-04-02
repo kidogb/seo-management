@@ -52,7 +52,7 @@ const validatorPhone = (rule, value, callback) => {
 };
 
 @connect(({ user }) => ({
-  currentUser: user.currentUser,
+  currentUser: user,
 }))
 @Form.create()
 class BaseView extends Component {
@@ -62,6 +62,7 @@ class BaseView extends Component {
 
   setBaseInfo = () => {
     const { currentUser, form } = this.props;
+    console.log("Login",currentUser );
     Object.keys(form.getFieldsValue()).forEach(key => {
       const obj = {};
       obj[key] = currentUser[key] || null;
@@ -85,7 +86,9 @@ class BaseView extends Component {
   render() {
     const {
       form: { getFieldDecorator },
+      currentUser,
     } = this.props;
+    console.log('login: ', currentUser);
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>

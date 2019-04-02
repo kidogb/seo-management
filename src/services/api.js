@@ -38,10 +38,14 @@ export async function updateRule(params = {}) {
 }
 
 export async function addProduct(params) {
-  return request('/commonapis/products', {
+  return request('/commonapis/products/', {
     method: 'POST',
     body: params,
   });
+}
+
+export async function getUploadFile(params) {
+  return request(`/commonapis/fileuploads?${stringify(params)}`);
 }
 
 export async function fakeChartData() {
