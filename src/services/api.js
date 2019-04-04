@@ -48,6 +48,17 @@ export async function getUploadFile(params) {
   return request(`/commonapis/fileuploads?${stringify(params)}`);
 }
 
+export async function addUploadFile(params) {
+  let formData = new FormData();
+  formData.append("file", params.file.fileList[0].originFileObj);
+  formData.append("title", params.title);
+  formData.append("note", params.note);
+  return request('/commonapis/fileuploads/', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
 export async function fakeChartData() {
   return request('/api/fake_chart_data');
 }

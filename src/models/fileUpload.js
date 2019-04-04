@@ -1,4 +1,4 @@
-import { getUploadFile} from '@/services/api';
+import { getUploadFile, addUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
@@ -11,6 +11,7 @@ export default {
       previous: null,
       next: null,
     },
+    
   },
 
   effects: {
@@ -22,15 +23,15 @@ export default {
       });
     },
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addProduct, payload);
+      const response = yield call(addUploadFile, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback();
-      message.success('Thêm sản phẩm thành công');
+      // message.success('Thêm sản phẩm thành công');
       yield put (
-        routerRedux.push(`/production/list`));
+        routerRedux.push(`/image/list`));
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);

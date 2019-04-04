@@ -3,8 +3,6 @@ import { formatMessage, FormattedMessage } from 'umi/locale';
 import { Form, Input, Upload, Select, Button } from 'antd';
 import { connect } from 'dva';
 import styles from './BaseView.less';
-import GeographicView from './GeographicView';
-import PhoneView from './PhoneView';
 // import { getTimeDistance } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -52,7 +50,7 @@ const validatorPhone = (rule, value, callback) => {
 };
 
 @connect(({ user }) => ({
-  currentUser: user,
+  currentUser: user.currentUser,
 }))
 @Form.create()
 class BaseView extends Component {
@@ -72,8 +70,8 @@ class BaseView extends Component {
 
   getAvatarURL() {
     const { currentUser } = this.props;
-    if (currentUser.avatar) {
-      return currentUser.avatar;
+    if (currentUser.profile_pic) {
+      return currentUser.profile_pic;
     }
     const url = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
     return url;
@@ -88,7 +86,7 @@ class BaseView extends Component {
       form: { getFieldDecorator },
       currentUser,
     } = this.props;
-    console.log('login: ', currentUser);
+    console.log('login: ', currentUser.email);
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
@@ -103,9 +101,9 @@ class BaseView extends Component {
                 ],
               })(<Input />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.nickname' })}>
-              {getFieldDecorator('name', {
-                rules: [
+            <FormItem label="Tên đăng nhập">
+              {getFieldDecorator('username', {
+                rules: [  
                   {
                     required: true,
                     message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
@@ -113,49 +111,33 @@ class BaseView extends Component {
                 ],
               })(<Input />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.profile' })}>
-              {getFieldDecorator('profile', {
-                rules: [
+            <FormItem label="Tên">
+              {getFieldDecorator('first_name', {
+                rules: [  
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.profile-message' }, {}),
+                    message: "Vui lòng nhập tên",
                   },
                 ],
-              })(
-                <Input.TextArea
-                  placeholder={formatMessage({ id: 'app.settings.basic.profile-placeholder' })}
-                  rows={4}
-                />
-              )}
+              })(<Input />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.country' })}>
-              {getFieldDecorator('country', {
-                rules: [
+            <FormItem label="Họ và tên đệm">
+              {getFieldDecorator('last_name', {
+                rules: [  
                   {
                     required: true,
-                    message: formatMessage({ id: 'app.settings.basic.country-message' }, {}),
+                    message: "Vui lòng nhập họ và tên đệm",
                   },
                 ],
-              })(
-                <Select style={{ maxWidth: 220 }}>
-                  <Option value="China">中国</Option>
-                </Select>
-              )}
+              })(<Input />)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.geographic' })}>
-              {getFieldDecorator('geographic', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.geographic-message' }, {}),
-                  },
-                  {
-                    validator: validatorGeographic,
-                  },
+            <FormItem label="Chức vụ">
+              {getFieldDecorator('user_type', {
+                rules: [  
                 ],
-              })(<GeographicView />)}
+              })(<Input readOnly/>)}
             </FormItem>
-            <FormItem label={formatMessage({ id: 'app.settings.basic.address' })}>
+            {/* <FormItem label={formatMessage({ id: 'app.settings.basic.address' })}>
               {getFieldDecorator('address', {
                 rules: [
                   {
@@ -175,7 +157,7 @@ class BaseView extends Component {
                   { validator: validatorPhone },
                 ],
               })(<PhoneView />)}
-            </FormItem>
+            </FormItem> */}
             <Button type="primary">
               <FormattedMessage
                 id="app.settings.basic.update"
