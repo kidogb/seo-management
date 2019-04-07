@@ -11,7 +11,6 @@ export default {
       previous: null,
       next: null,
     },
-    
   },
 
   effects: {
@@ -28,19 +27,19 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
       // message.success('Thêm sản phẩm thành công');
       yield put (
         routerRedux.push(`/image/list`));
     },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
+    // *remove({ payload, callback }, { call, put }) {
+    //   const response = yield call(removeRule, payload);
+    //   yield put({
+    //     type: 'save',
+    //     payload: response,
+    //   });
+    //   if (callback) callback();
+    // },
   },
 
   reducers: {

@@ -1,8 +1,8 @@
-import { queryProduct, queryProductDetail, addProduct, removeProduct, addUploadFile } from '@/services/api';
+import { updateSample, querySample, querySampleDetail, addSample, removeSample, addUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
-  namespace: 'product',
+  namespace: 'sample',
 
   state: {
     data: {
@@ -15,7 +15,7 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryProduct, payload);
+      const response = yield call(querySample, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -23,7 +23,7 @@ export default {
       
     },
     *fetchDetail({ payload, callback }, { call, put }) {
-      const response = yield call(queryProductDetail, payload);
+      const response = yield call(querySampleDetail, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -43,31 +43,32 @@ export default {
       yield uploadResList.map(uploadRes => {
         if(uploadRes.id) ps_imgs.push(uploadRes.id);
       });
-      const response = yield call(addProduct, {... payload, ps_imgs});
+      const response = yield call(addSample, {... payload, ps_imgs});
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback();
       yield put (
-        routerRedux.push(`/production/list`));
+        routerRedux.push(`/sample/list`));
     },
     *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeProduct, payload);
+      const response = yield call(removeSample, payload);
       // yield put({
       //   type: 'save',
       //   payload: response,
       // });
-      console.log("Response: ", response);
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
+      const response = yield call(updateSample, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback();
+      yield put (
+        routerRedux.push(`/sample/${payload.id}/detail`));
     },
   },
 

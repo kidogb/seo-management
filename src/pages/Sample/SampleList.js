@@ -24,7 +24,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import PictureWall from '@/components/Upload';
+import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 
 const FormItem = Form.Item;
@@ -38,12 +38,12 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ product, loading }) => ({
-  product,
-  loading: loading.models.product,
+@connect(({ sample, loading }) => ({
+  sample,
+  loading: loading.models.sample,
 }))
 @Form.create()
-class TableList extends PureComponent {
+class SampleTableList extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
@@ -59,10 +59,10 @@ class TableList extends PureComponent {
       key: 'product_id',
       dataIndex: 'id',
       width:10,
-      render: id => <a onClick={() => this.previewItem(id)}>{id}</a>,
+      render: id => <a onClick={() => this.previewSample(id)}>{id}</a>,
     },
     {
-      title: 'Tên sản phẩm',
+      title: 'Tên mẫu',
       key: 'product_name',
       dataIndex: 'ps_product_name',
       width: 200,
@@ -79,16 +79,16 @@ class TableList extends PureComponent {
       dataIndex: 'ps_imgs',
       width: 400,
       render: ps_imgs => {
-        let defaultFileList = [];
+        let fileList = [];
         ps_imgs.map(ps_img => {
-          defaultFileList.push({
+          fileList.push({
             uid: ps_img.id,
             name: ps_img.title,
             // status: 'done',
             url: ps_img.file,
           });
         });
-        return <PictureWall defaultFileList={defaultFileList} />;
+        return <PicturesWall fileList={fileList} displayUploadButton={false} showRemoveIcon={false}/>;
       },
     },
     {
@@ -105,7 +105,7 @@ class TableList extends PureComponent {
     },
     {
       title: 'Tồn kho',
-      key: 'product_stock',
+      key: 'product_stock', 
       dataIndex: 'ps_stock',
       width: 20,
     },
@@ -116,7 +116,7 @@ class TableList extends PureComponent {
       width: 10,
     },
     {
-      title: 'Mô tả sản phẩm',
+      title: 'Mô tả mẫu',
       key: 'product_description',
       dataIndex: 'ps_product_description',
     },
@@ -126,8 +126,8 @@ class TableList extends PureComponent {
       fixed: 'right',
       render: (record) => (
           <Button.Group>
-            <Button type="primary" ghost icon="eye" onClick={() => this.previewItem(record.id)} />
-            <Button type="danger" icon="delete" ghost onClick={() => console.log("Go to delete")} />
+            <Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} />
+            <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />
           </Button.Group>
       ),
     },
@@ -136,7 +136,7 @@ class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'product/fetch',
+      type: 'sample/fetch',
     });
   }
 
@@ -161,13 +161,13 @@ class TableList extends PureComponent {
     }
 
     dispatch({
-      type: 'product/fetch',
+      type: 'sample/fetch',
       payload: params,
     });
   };
 
-  previewItem = id => {
-    router.push(`/production/${id}/detail`);
+  previewSample = id => {
+    router.push(`/sample/${id}/detail`);
   };
 
   handleFormReset = () => {
@@ -177,7 +177,7 @@ class TableList extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: 'product/fetch',
+      type: 'sample/fetch',
       payload: {},
     });
   };
@@ -197,7 +197,7 @@ class TableList extends PureComponent {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'product/remove',
+          type: 'sample/remove',
           payload: {
             key: selectedRows.map(row => row.key),
           },
@@ -219,8 +219,46 @@ class TableList extends PureComponent {
     });
   };
 
-  handleAddProduct = () => {
-    router.push(`/production/registration`);
+  handleAddSample = () => {
+    router.push(`/sample/registration`);
+  }
+
+  handleSearch = e => {
+    e.preventDefault();
+
+    const { dispatch, form } = this.props;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      this.setState({
+        formValues: fieldsValue,
+      });
+
+      dispatch({
+        type: 'sample/fetch',
+        payload: fieldsValue,
+      });
+    });
+  };
+
+  handleRemoveSample = id => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'sample/remove',
+      payload: id,
+      callback: (res) => {
+        if (!res) {
+          message.success('Xoá mẫu thành công!!');
+          dispatch({
+            type: 'sample/fetch',
+            payload: {},
+          })
+        } else {
+          message.error('Không thể xoá mẫu!!')
+        }
+      }
+    });
   }
 
   renderSimpleForm() {
@@ -231,8 +269,8 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="Tên sản phẩm">
-              {getFieldDecorator('ps_product_name')(<Input placeholder="Nhập tên sản phẩm" />)}
+            <FormItem label="Tên mẫu">
+              {getFieldDecorator('ps_product_name')(<Input placeholder="Nhập tên mẫu" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -261,8 +299,8 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="Tên sản phẩm">
-              {getFieldDecorator('ps_product_name')(<Input placeholder="Nhập tên sản phẩm" />)}
+            <FormItem label="Tên mẫu">
+              {getFieldDecorator('ps_product_name')(<Input placeholder="Nhập tên mẫu" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -300,11 +338,10 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      product: { data },
+      sample: { data },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    console.log("data: ", data);
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -314,13 +351,13 @@ class TableList extends PureComponent {
       handleUpdate: this.handleUpdate,
     };
     return (
-      <PageHeaderWrapper title="Danh sách sản phẩm">
+      <PageHeaderWrapper title="Danh sách mẫu">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleAddProduct()}>
-                Thêm sản phẩm
+              <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
+                Thêm mẫu
               </Button>
             </div>
             <StandardTable
@@ -339,4 +376,4 @@ class TableList extends PureComponent {
   }
 }
 
-export default TableList;
+export default SampleTableList;

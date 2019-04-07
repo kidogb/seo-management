@@ -24,20 +24,20 @@ import ButtonGroup from 'antd/lib/button/button-group';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ product }) => ({
-  product,
+@connect(({ sample }) => ({
+  sample,
 }))
 @Form.create()
-class ProductDetailForm extends PureComponent {
+class SampleDetailForm extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     const id = this.props.match.params.id;
     dispatch({
-      type: 'product/fetchDetail',
+      type: 'sample/fetchDetail',
       payload: id,
     });
   }
-  getProductImgs = files => {
+  getSampleImgs = files => {
     let defaultFileList = [];
     files.map(file => {
       if (file.id)
@@ -51,19 +51,19 @@ class ProductDetailForm extends PureComponent {
     return defaultFileList;
   }
   goBackToListScreen = id => {
-    router.push(`/production/list`);
+    router.push(`/sample/list`);
   };
-  handleRemoveProuct = id => {
+  handleRemoveSample = id => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'product/remove',
+      type: 'sample/remove',
       payload: id,
       callback: (res) => {
         if (!res) {
-          message.success('Xoá sản phẩm thành công!!');
-          router.push(`/production/list`);
+          message.success('Xoá mẫu thành công!!');
+          router.push(`/sample/list`);
         } else {
-          message.error('Không thể xoá sản phẩm!!')
+          message.error('Không thể xoá mẫu!!')
         }
       }
     });
@@ -92,35 +92,35 @@ class ProductDetailForm extends PureComponent {
       },
     };
     const {
-      product: { data },
+      sample: { data },
       loading,
     } = this.props;
     const id = this.props.match.params.id;
     return (
       <PageHeaderWrapper
-        title="Thông tin sản phẩm"
+        title="Thông tin mẫu"
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="Tên sản phẩm" >
+            <FormItem {...formItemLayout} label="Tên mẫu" >
               <TextArea
-                key="ps_product_name"
+                key="ps_sample_name"
                 style={{ minHeight: 32 }}
-                placeholder="Tên sản phẩm"
+                placeholder="Tên mẫu"
                 autosize={{ minRows: 2, maxRows: 6 }}
                 value={data.ps_product_name}
                 readOnly
               />
             </FormItem>
-            <FormItem {...formItemLayout} label="Mô tả sản phẩm">
-              {(data && data.id) && <PicturesWall fileList={this.getProductImgs(data.ps_imgs)} displayUploadButton={false} showRemoveIcon={false}
+            <FormItem {...formItemLayout} label="Mô tả mẫu">
+              {(data && data.id) && <PicturesWall fileList={this.getSampleImgs(data.ps_imgs)} displayUploadButton={false} showRemoveIcon={false}
                 key="upload" />}
             </FormItem>
-            <FormItem {...formItemLayout} label="Mô tả sản phẩm">
+            <FormItem {...formItemLayout} label="Mô tả mẫu">
               <TextArea
-                key="ps_product_description"
+                key="ps_sample_description"
                 style={{ minHeight: 32 }}
-                placeholder="Mô tả sản phẩm"
+                placeholder="Mô tả mẫu"
                 autosize={{ minRows: 2, maxRows: 8 }}
                 value={data.ps_product_description}
                 readOnly
@@ -133,7 +133,7 @@ class ProductDetailForm extends PureComponent {
               <Input key="ps_price" placeholder="Giá" value={data.ps_price} readOnly />
             </FormItem>
             <FormItem {...formItemLayout} label="Khối lượng (g)">
-              <Input key="ps_product_weight" placeholder="Khối lượng (g)" value={data.ps_product_weight} readOnly />
+              <Input key="ps_sample_weight" placeholder="Khối lượng (g)" value={data.ps_product_weight} readOnly />
             </FormItem>
             <FormItem {...formItemLayout} label="Tồn kho">
               <Input key="ps_stock" placeholder="Tồn kho" value={data.ps_stock} readOnly />
@@ -143,8 +143,11 @@ class ProductDetailForm extends PureComponent {
             </FormItem>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
             <ButtonGroup>
-                <Button  key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveProuct(id)}>
-                  Xoá sản phẩm
+                <Button  key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
+                  Xoá mẫu
+              </Button>
+                <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/${id}/edit`)}>
+                  Cập nhật
               </Button>
                 <Button key="btnBack" style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>
                   Quay lại
@@ -158,4 +161,4 @@ class ProductDetailForm extends PureComponent {
   }
 }
 
-export default ProductDetailForm;
+export default SampleDetailForm;

@@ -55,18 +55,24 @@ export default [
           {
             path: '/sample/list',
             name: 'list',
-            component: './Sample/List',
+            component: './Sample/SampleList',
           },
           {
             path: '/sample/:id/detail',
             name: 'detail',
-            component: './Sample/Detail',
+            component: './Sample/SampleDetail',
+            hideInMenu: true,
+          },
+          {
+            path: '/sample/:id/edit',
+            name: 'edit',
+            component: './Sample/SampleEdit',
             hideInMenu: true,
           },
           {
             path: '/sample/registration',
             name: 'registration',
-            component: './Sample/Registration',
+            component: './Sample/SampleRegistration',
           }
         ]
       },

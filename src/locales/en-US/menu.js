@@ -32,6 +32,7 @@ export default {
   'menu.sample.list': 'Danh sách sản phẩm mẫu',
   'menu.sample.registration': 'Thêm sản phẩm mẫu',
   'menu.sample.detail': 'Thông tin sản phẩm mẫu',
+  'menu.sample.edit': ' Cập nhật thông tin mẫu',
   'menu.customer': 'Khách hàng',
   'menu.customer.list': 'Danh sách khách hàng',
   'menu.customer.registration': 'Thêm khách hàng',

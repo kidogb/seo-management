@@ -30,10 +30,10 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 @connect(({ loading }) => ({
-  submitting: loading.effects['product/add'],
+  submitting: loading.effects['sample/add'],
 }))
 @Form.create()
-class ProductRegistration extends PureComponent {
+class SampleRegistration extends PureComponent {
   state = {
     fileList: [
     ]
@@ -59,7 +59,7 @@ class ProductRegistration extends PureComponent {
         if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
         else values.channel_50010_switch = "Đóng";
         dispatch({
-          type: 'product/add',
+          type: 'sample/add',
           payload: {...values},
         });
       }
@@ -98,19 +98,19 @@ class ProductRegistration extends PureComponent {
 
     return (
       <PageHeaderWrapper
-        title="Thêm sản phẩm"
+        title="Thêm mẫu"
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="Tên sản phẩm">
+            <FormItem {...formItemLayout} label="Tên mẫu">
               {getFieldDecorator('ps_product_name', {
                 rules: [
                   {
                     required: true,
-                    message: "Tên sản phẩm không được để trống",
+                    message: "Tên mẫu không được để trống",
                   },
                 ],
-              })(<Input placeholder="Nhập tên sản phẩm" />)}
+              })(<Input placeholder="Nhập tên mẫu" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="Category">
               {getFieldDecorator('ps_category_list_id', {
@@ -122,18 +122,18 @@ class ProductRegistration extends PureComponent {
                 ],
               })(<Input placeholder="Nhập category" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="Thông tin sản phẩm">
+            <FormItem {...formItemLayout} label="Thông tin mẫu">
               {getFieldDecorator('ps_product_description', {
                 rules: [
                   {
                     required: true,
-                    message: "Thông tin sản phẩm không được để trống",
+                    message: "Thông tin mẫu không được để trống",
                   },
                 ],
               })(
                 <TextArea
                   style={{ minHeight: 32 , minWidth: 32}}
-                  placeholder="Nhập thông tin sản phẩm"
+                  placeholder="Nhập thông tin mẫu"
                   rows={4}
                 />
               )}
@@ -143,13 +143,13 @@ class ProductRegistration extends PureComponent {
                 rules: [
                   {
                     required: true,
-                    message: "Giá sản phẩm không được để trống!!!",
+                    message: "Giá mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập giá sản phẩm (VND)"
+                  placeholder="Nhập giá mẫu (VND)"
                   formatter={value => `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\đ\s?|(,*)/g, '')}
                 />
@@ -160,13 +160,13 @@ class ProductRegistration extends PureComponent {
                 rules: [
                   {
                     required: true,
-                    message: "Khối lượng sản phẩm không được để trống!!!",
+                    message: "Khối lượng mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập khối lượng sản phẩm (g)"
+                  placeholder="Nhập khối lượng mẫu (g)"
                   formatter={value => `g ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\g\s?|(,*)/g, '')}
                 />
@@ -177,13 +177,13 @@ class ProductRegistration extends PureComponent {
                 rules: [
                   {
                     required: true,
-                    message: "Số lượng sản phẩm không được để trống!!!",
+                    message: "Số lượng mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập số lượng sản phẩm"
+                  placeholder="Nhập số lượng mẫu"
                 />
               )}
             </FormItem>
@@ -233,7 +233,7 @@ class ProductRegistration extends PureComponent {
                 rules: [
                   {
                     required: true,
-                    message: "Ảnh sản phẩm không được để trống!!!",
+                    message: "Ảnh mẫu không được để trống!!!",
                   },
                 ],
               })(
@@ -245,7 +245,7 @@ class ProductRegistration extends PureComponent {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 <FormattedMessage id="form.submit" />
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/production/list`)}>
+              <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/sample/list`)}>
                 Cancel
               </Button>
             </FormItem>
@@ -256,4 +256,4 @@ class ProductRegistration extends PureComponent {
   }
 }
 
-export default ProductRegistration;
+export default SampleRegistration;

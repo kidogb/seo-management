@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -12,32 +13,35 @@ import {
   Radio,
   Icon,
   Tooltip,
-  Switch,
-  Checkbox,
-  Row,
-  Col,
+  message,
   Upload,
+  Switch,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
+import PicturesWall from '@/components/Upload';
 
 const FormItem = Form.Item;
-const { Option } = Select;
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading }) => ({
-  submitting: loading.effects['product/add'],
+@connect(({ loading, sample }) => ({
+  submitting: loading.effects['sample/update'],
+  sample,
 }))
 @Form.create()
-class SampleRegistration extends PureComponent {
-  transformSwitchValue = value => {
-    if (value) return "Đóng";
-    else return "Mở";
-  }
+class SampleEditForm extends PureComponent {
+  state = {
+    fileList: [
+    ]
+  };
   handleSubmit = e => {
-    const { dispatch, form } = this.props;
+    const id = this.props.match.params.id; 
+    const { dispatch, form, sample:{data} } = this.props;
+    const ps_imgs = data.ps_imgs.map(ps_img => ps_img.id);
     e.preventDefault();
+    form.setFieldsValue({
+      upload: data.ps_imgs,
+    });
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
@@ -51,27 +55,78 @@ class SampleRegistration extends PureComponent {
         if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
         else values.channel_50010_switch = "Đóng";
         dispatch({
-          type: 'product/add',
-          payload: values,
+          type: 'sample/update',
+          payload: {...values, id, ps_imgs},
         });
       }
     });
   };
+  handleChangeUpload = (info) => {
+    let fileList = info.fileList;
+    // 1. Limit the number of uploaded files
+    if (fileList.length > 5)  fileList = fileList.slice(-5);
+    this.setState({ fileList });
+  }
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const id = this.props.match.params.id; 
+    dispatch({
+      type: 'sample/fetchDetail',
+      payload: id,
+      callback: (res) => {
+        if (res.id)
+          this.setState({
+            fileList: res.ps_imgs,
+          });
+      }
+    });
+  }
+  getSampleImgs = files => {
+    let defaultFileList = [];
+    files.map(file => {
+      if (file.id)
+        defaultFileList.push({
+          uid: file.id,
+          name: file.title,
+          // status: 'done',
+          url: file.file,
+        });
+    });
+    return defaultFileList;
+  }
+  goBackToListScreen = id => {
+      router.push(`/sample/list`);
+  };
+  // handleRemoveProduct = id => {
+  //   const {dispatch} = this.props;
+  //   dispatch({
+  //     type: 'sample/remove',
+  //     payload: id,
+  //     callback: (res) => {
+  //       if (!res) {
+  //         message.success('Xoá mẫu thành công!!');
+  //         router.push(`/sample/list`);
+  //       } else {
+  //         message.error('Không thể xoá mẫu!!')
+  //       }
+  //     }
+  //   });
+  // }
   render() {
     const { submitting } = this.props;
     const {
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator, getFieldValue }
     } = this.props;
 
     const formItemLayout = {
       labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
+        xs: { span: 12 },
+        sm: { span: 4 },
       },
       wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 },
-        md: { span: 10 },
+        xs: { span: 48 },
+        sm: { span: 24 },
+        md: { span: 16 },
       },
     };
 
@@ -81,94 +136,104 @@ class SampleRegistration extends PureComponent {
         sm: { span: 10, offset: 7 },
       },
     };
-
+    const {
+      sample: { data },
+      images,
+      loading,
+    } = this.props;
+    const id = this.props.match.params.id; 
+    const {fileList} = this.state;
     return (
       <PageHeaderWrapper
-        title="Thêm sản phẩm"
+        title= "Cập nhật thông tin mẫu"
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="Tên sản phấm">
+          <FormItem {...formItemLayout} label="Tên mẫu">
               {getFieldDecorator('ps_product_name', {
+                initialValue: data.ps_product_name,
                 rules: [
                   {
                     required: true,
-                    message: "Tên sản phẩm không được để trống",
+                    message: "Tên mẫu không được để trống",
                   },
                 ],
-              })(<Input placeholder="Nhập tên sản phẩm" />)}
+              })(<Input placeholder="Nhập tên mẫu" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="Category">
-              {getFieldDecorator('ps_category_list_id', {
-                rules: [
-                  {
-                    required: true,
-                    message: "Category không được để trống",
-                  },
-                ],
-              })(<Input placeholder="Nhập category" />)}
+            <FormItem {...formItemLayout} label="Ảnh mẫu">
+              {(fileList !== []) && getFieldDecorator('upload',
+                {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Ảnh mẫu không được để trống",
+                    },
+                  ],
+                }
+              )(<PicturesWall displayUploadButton={false} showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={this.getSampleImgs(fileList)}>
+              </PicturesWall>)}
+                
             </FormItem>
-            <FormItem {...formItemLayout} label="Thông tin sản phẩm">
+            <FormItem {...formItemLayout} label="Thông tin mẫu">
               {getFieldDecorator('ps_product_description', {
+                initialValue: data.ps_product_description,
                 rules: [
                   {
                     required: true,
-                    message: "Thông tin sản phẩm không được để trống",
+                    message: "Thông tin mẫu không được để trống",
                   },
                 ],
               })(
                 <TextArea
                   style={{ minHeight: 32 , minWidth: 32}}
-                  placeholder="Nhập thông tin sản phẩm"
+                  placeholder="Nhập thông tin mẫu"
                   rows={4}
                 />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Giá">
-              {getFieldDecorator('ps_price', {
+            <FormItem {...formItemLayout} label="Category">
+              {getFieldDecorator('ps_category_list_id', {
+                initialValue: data.ps_category_list_id,
                 rules: [
                   {
                     required: true,
-                    message: "Giá sản phẩm không được để trống!!!",
+                    message: "Giá mẫu không được để trống!!!",
+                  },
+                ],
+              })
+                (<Input key="ps_category_list_id" placeholder="Category" />)}
+            </FormItem>
+            <FormItem {...formItemLayout} label="Giá">
+              {getFieldDecorator('ps_price', {
+                initialValue: data.ps_price,
+                rules: [
+                  {
+                    required: true,
+                    message: "Giá mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập giá sản phẩm (VND)"
+                  placeholder="Nhập giá mẫu (VND)"
                   formatter={value => `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\đ\s?|(,*)/g, '')}
                 />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Ảnh upload">
-              {getFieldDecorator('ps_imgs', {
-                initialValue: [1],
-                rules: [
-                  {
-                    required: true,
-                    message: "Ảnh sản phẩm không được để trống!!!",
-                  },
-                ],
-              })(
-                <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập id ảnh sản phẩm"
-                />
-              )}
-            </FormItem>
             <FormItem {...formItemLayout} label="Khối lượng">
               {getFieldDecorator('ps_product_weight', {
+                initialValue: data.ps_product_weight,
                 rules: [
                   {
                     required: true,
-                    message: "Khối lượng sản phẩm không được để trống!!!",
+                    message: "Khối lượng mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập khối lượng sản phẩm (g)"
+                  placeholder="Nhập khối lượng mẫu (g)"
                   formatter={value => `g ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\g\s?|(,*)/g, '')}
                 />
@@ -176,21 +241,23 @@ class SampleRegistration extends PureComponent {
             </FormItem>
             <FormItem {...formItemLayout} label="Số lượng trong kho">
               {getFieldDecorator('ps_stock', {
+                initialValue: data.ps_stock,
                 rules: [
                   {
                     required: true,
-                    message: "Số lượng sản phẩm không được để trống!!!",
+                    message: "Số lượng mẫu không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
                   style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập số lượng sản phẩm"
+                  placeholder="Nhập số lượng mẫu"
                 />
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="Thời gian ship (ngày)">
               {getFieldDecorator('ps_days_to_ship', {
+                initialValue: data.ps_days_to_ship,
                 rules: [
                   {
                     required: true,
@@ -229,21 +296,15 @@ class SampleRegistration extends PureComponent {
                 <Switch />
               )}
             </Form.Item>
-            <Form.Item {...formItemLayout} label="Upload ảnh">
-              {getFieldDecorator('upload')(
-                <Upload>
-                  <Button>
-                    <Icon type="upload" /> Upload
-                    </Button>
-                </Upload>
-              )}
-            </Form.Item>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-              <Button type="primary" htmlType="submit" loading={submitting}>
-                <FormattedMessage id="form.submit" />
+              {/* <Button type="primary" htmlType="submit" loading={submitting}>
+                Chỉnh sửa
+              </Button> */}
+              <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }} loading={submitting}>
+                Câp nhật
               </Button>
-              <Button style={{ marginLeft: 8 }}>
-                <FormattedMessage id="form.save" />
+              <Button style={{ marginLeft: 8 }} onClick={()=>this.goBackToListScreen()}>
+                Quay lại
               </Button>
             </FormItem>
           </Form>
@@ -253,4 +314,4 @@ class SampleRegistration extends PureComponent {
   }
 }
 
-export default SampleRegistration;
+export default SampleEditForm;

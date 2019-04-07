@@ -17,30 +17,44 @@ export async function queryProductDetail(id) {
   return request(`/commonapis/products/${id}`);
 }
 
-export async function removeRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    body: {
-      ...params,
-      method: 'delete',
-    },
-  });
-}
-
-export async function updateRule(params = {}) {
-  return request(`/api/rule?${stringify(params.query)}`, {
-    method: 'POST',
-    body: {
-      ...params.body,
-      method: 'update',
-    },
-  });
-}
-
 export async function addProduct(params) {
   return request('/commonapis/products/', {
     method: 'POST',
     body: params,
+  });
+}
+
+export async function removeProduct(id) {
+  return request(`/commonapis/products/${id}/`, {
+    method: 'DELETE',
+  });
+}
+
+export async function querySample(params) {
+  return request(`/commonapis/samples?${stringify(params)}`);
+}
+
+export async function querySampleDetail(id) {
+  return request(`/commonapis/samples/${id}`);
+}
+
+export async function removeSample(id) {
+  return request(`/commonapis/samples/${id}/`, {
+    method: 'DELETE',
+  });
+}
+
+export async function addSample(params) {
+  return request('/commonapis/samples/', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function updateSample(payload) {
+  return request(`/commonapis/samples/${payload.id}/`, {
+    method: 'PUT',
+    body: payload,
   });
 }
 
@@ -50,7 +64,7 @@ export async function getUploadFile(params) {
 
 export async function addUploadFile(params) {
   let formData = new FormData();
-  formData.append("file", params.file.fileList[0].originFileObj);
+  formData.append("file", params.file);
   formData.append("title", params.title);
   formData.append("note", params.note);
   return request('/commonapis/fileuploads/', {
