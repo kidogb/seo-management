@@ -114,7 +114,7 @@ class StandardTable extends PureComponent {
           dataSource={results}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 2500 }}
+          scroll={{ x: 5500 }}
           // useFixedHeader= {true}
           {...rest}
         />

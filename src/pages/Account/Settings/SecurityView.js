@@ -1,8 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, } from 'react';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { List } from 'antd';
+import { List, Modal, Button, Input, Form } from 'antd';
+import ChangePassword from './ChangePassword';
 // import { getTimeDistance } from '@/utils/utils';
-
+const FormItem = Form.Item;
 const passwordStrength = {
   strong: (
     <font className="strong">
@@ -23,6 +24,14 @@ const passwordStrength = {
 };
 
 class SecurityView extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isDisplayChangePasswordModal: false,
+    }
+  }
+  
+
   getData = () => [
     {
       title: formatMessage({ id: 'app.settings.security.password' }, {}),
@@ -33,58 +42,82 @@ class SecurityView extends Component {
         </Fragment>
       ),
       actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
+        <a
+        onClick={this.displayChangePasswordModal}
+        >
+          Đổi mật khẩu
         </a>,
       ],
     },
-    {
-      title: formatMessage({ id: 'app.settings.security.phone' }, {}),
-      description: `${formatMessage(
-        { id: 'app.settings.security.phone-description' },
-        {}
-      )}：138****8293`,
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.question' }, {}),
-      description: formatMessage({ id: 'app.settings.security.question-description' }, {}),
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.set" defaultMessage="Set" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.email' }, {}),
-      description: `${formatMessage(
-        { id: 'app.settings.security.email-description' },
-        {}
-      )}：ant***sign.com`,
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.mfa' }, {}),
-      description: formatMessage({ id: 'app.settings.security.mfa-description' }, {}),
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.bind" defaultMessage="Bind" />
-        </a>,
-      ],
-    },
+    // {
+    //   title: formatMessage({ id: 'app.settings.security.phone' }, {}),
+    //   description: `${formatMessage(
+    //     { id: 'app.settings.security.phone-description' },
+    //     {}
+    //   )}：138****8293`,
+    //   actions: [
+    //     <a>
+    //       <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
+    //     </a>,
+    //   ],
+    // },
+    // {
+    //   title: formatMessage({ id: 'app.settings.security.question' }, {}),
+    //   description: formatMessage({ id: 'app.settings.security.question-description' }, {}),
+    //   actions: [
+    //     <a>
+    //       <FormattedMessage id="app.settings.security.set" defaultMessage="Set" />
+    //     </a>,
+    //   ],
+    // },
+    // {
+    //   title: formatMessage({ id: 'app.settings.security.email' }, {}),
+    //   description: `${formatMessage(
+    //     { id: 'app.settings.security.email-description' },
+    //     {}
+    //   )}：ant***sign.com`,
+    //   actions: [
+    //     <a>
+    //       <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
+    //     </a>,
+    //   ],
+    // },
+    // {
+    //   title: formatMessage({ id: 'app.settings.security.mfa' }, {}),
+    //   description: formatMessage({ id: 'app.settings.security.mfa-description' }, {}),
+    //   actions: [
+    //     <a>
+    //       <FormattedMessage id="app.settings.security.bind" defaultMessage="Bind" />
+    //     </a>,
+    //   ],
+    // },
   ];
 
+  displayChangePasswordModal = () => {
+    this.setState ({
+      isDisplayChangePasswordModal: true,
+    });
+  }
+
   render() {
+    const {isDisplayChangePasswordModal} = this.state;
     return (
       <Fragment>
+        <Modal
+          id="changePasswordModal"
+          visible={isDisplayChangePasswordModal}
+          title="Đổi mật khẩu"
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="Quay lại" onClick={this.handleCancel}>Return</Button>,
+            <Button key="Thay đổi" type="primary" onClick={this.handleOk}>
+              Đổi mật khẩu
+            </Button>,
+          ]}
+        >
+          <ChangePassword/>
+        </Modal>
         <List
           itemLayout="horizontal"
           dataSource={this.getData()}

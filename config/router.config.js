@@ -132,10 +132,10 @@ export default [
                 path: '/account/settings/base',
                 component: './Account/Settings/BaseView',
               },
-              // {
-              //   path: '/account/settings/security',
-              //   component: './Account/Settings/SecurityView',
-              // },
+              {
+                path: '/account/settings/security',
+                component: './Account/Settings/SecurityView',
+              },
             ],
           },
         ],

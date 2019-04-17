@@ -26,6 +26,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import PicturesWall from '@/components/Upload';
 import styles from './List.less';
+import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -359,6 +360,7 @@ class SampleTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
               </Button>
+              {data.results && <DownloadExcel excelData={data.results} sheetName='Sample'/>}
             </div>
             <StandardTable
               rowKey={record => record.id}

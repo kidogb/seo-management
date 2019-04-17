@@ -16,10 +16,8 @@ class Info extends Component {
     super(props);
     const { match, location } = props;
     const menuMap = {
-      base: <FormattedMessage id="app.settings.menuMap.basic" defaultMessage="Basic Settings" />,
-      // security: (
-      //   <FormattedMessage id="app.settings.menuMap.security" defaultMessage="Security Settings" />
-      // ),
+      base: "Thông tin người dùng",
+      security: "Tuỳ chỉnh cá nhân",
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
