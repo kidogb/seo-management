@@ -7,3 +7,10 @@ export async function query() {
 export async function queryCurrent() {
   return request('/commonapis/currentUser');
 }
+
+export async function changePassword(params) {
+  return request('/commonapis/password/change/', {
+    method: 'POST',
+    body: params,
+  });
+}

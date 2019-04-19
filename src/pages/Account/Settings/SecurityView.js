@@ -93,6 +93,17 @@ class SecurityView extends Component {
     // },
   ];
 
+  handleChangePasswordCancel = () => {
+    this.setState({
+      isDisplayChangePasswordModal: false,
+    })
+  }
+
+  handleChangePasswordOk = () => {
+    
+  }
+  
+
   displayChangePasswordModal = () => {
     this.setState ({
       isDisplayChangePasswordModal: true,
@@ -103,21 +114,16 @@ class SecurityView extends Component {
     const {isDisplayChangePasswordModal} = this.state;
     return (
       <Fragment>
-        <Modal
+        {isDisplayChangePasswordModal &&  <Modal
           id="changePasswordModal"
-          visible={isDisplayChangePasswordModal}
+          visible={true}
           title="Đổi mật khẩu"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="Quay lại" onClick={this.handleCancel}>Return</Button>,
-            <Button key="Thay đổi" type="primary" onClick={this.handleOk}>
-              Đổi mật khẩu
-            </Button>,
-          ]}
+          onOk={this.handleChangePasswordOk}
+          onCancel={this.handleChangePasswordCancel}
+          footer={null}
         >
-          <ChangePassword/>
-        </Modal>
+          <ChangePassword onCancel={this.handleChangePasswordCancel}/>
+        </Modal>}
         <List
           itemLayout="horizontal"
           dataSource={this.getData()}

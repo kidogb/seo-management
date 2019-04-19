@@ -36,7 +36,8 @@ const { TextArea } = Input;
 class SampleRegistration extends PureComponent {
   state = {
     fileList: [
-    ]
+    ], 
+    createProductCheck: false,
   };
   transformSwitchValue = value => {
     if (value) return "Đóng";
@@ -58,6 +59,12 @@ class SampleRegistration extends PureComponent {
         else values.channel_50016_switch = "Đóng";
         if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
         else values.channel_50010_switch = "Đóng";
+        if (values.ps_add_new_product_from_sample_checkbox) {
+          dispatch({
+            type: 'product/add',
+            payload: {...values},
+          });
+        }
         dispatch({
           type: 'sample/add',
           payload: {...values},
@@ -71,9 +78,10 @@ class SampleRegistration extends PureComponent {
     if (fileList.length > 5)  fileList = fileList.slice(-5);
     this.setState({ fileList });
   }
+
   render() {
     const { submitting } = this.props;
-    const {fileList} = this.state;
+    const {fileList, createProductCheck} = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -102,6 +110,12 @@ class SampleRegistration extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
+            <FormItem {...formItemLayout} label="">
+              {getFieldDecorator('ps_add_new_product_from_sample_checkbox', {
+              })(
+                <Checkbox>Tạo sản phẩm mới từ mẫu</Checkbox>
+              )}
+            </FormItem>
             <FormItem {...formItemLayout} label="Tên mẫu">
               {getFieldDecorator('ps_product_name', {
                 rules: [
@@ -243,10 +257,10 @@ class SampleRegistration extends PureComponent {
             </Form.Item>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
-                <FormattedMessage id="form.submit" />
+                Tạo mẫu
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/sample/list`)}>
-                Cancel
+                Quay lại
               </Button>
             </FormItem>
           </Form>

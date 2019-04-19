@@ -70,6 +70,7 @@ export default {
       setAuthority((payload && payload.user)?payload.user.user_type:'guest');
       return {
         ...state,
+        data: payload,
       };
     },
   },

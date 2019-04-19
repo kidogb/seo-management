@@ -120,6 +120,7 @@ class SampleTableList extends PureComponent {
       title: 'Mô tả mẫu',
       key: 'product_description',
       dataIndex: 'ps_product_description',
+      width: 500,
     },
     {
       title: 'Hành động',
@@ -133,6 +134,11 @@ class SampleTableList extends PureComponent {
       ),
     },
   ];
+
+  generateColumns = (data) => {
+    let columns = [];
+
+  }
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -360,7 +366,7 @@ class SampleTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
               </Button>
-              {data.results && <DownloadExcel excelData={data.results} sheetName='Sample'/>}
+              {data.results && <DownloadExcel isProductExport= {false} excelData={data.results} sheetName='Sample' filename='export_sample'/>}
             </div>
             <StandardTable
               rowKey={record => record.id}

@@ -9,7 +9,7 @@ import styles from './Login.less';
 const { UserName, Password, Submit } = Login;
 
 @connect(({ login, loading }) => ({
-  login,
+  login: login.data,
   submitting: loading.effects['login/login'],
 }))
 class LoginPage extends Component {
@@ -42,6 +42,7 @@ class LoginPage extends Component {
   render() {
     const { login, submitting } = this.props;
     const { autoLogin } = this.state;
+    console.log('Login: ', login);
     return (
       <div className={styles.main}>
         <Login
@@ -51,9 +52,9 @@ class LoginPage extends Component {
           }}
         >
           <div>
-            {login.token === '' &&
+            {login && login.errors &&
               !submitting &&
-              this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
+              this.renderMessage("Email hoặc mật khẩu không chính xác")}
             <UserName
               name="username"
               placeholder="Nhập email"
