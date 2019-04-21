@@ -24,7 +24,7 @@ export default {
         payload: response,
       });
     },
-    *changePassword({ payload, callback }, { call, put }) {
+    *changePassword({ payload, callback }, { call }) {
       const response = yield call(changePassword, payload);
       if (callback) callback(response);
     },

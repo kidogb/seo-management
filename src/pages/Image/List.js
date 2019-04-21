@@ -26,6 +26,7 @@ import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import PictureWall from '@/components/Upload';
 import styles from './List.less';
+import Link from 'umi/link';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -64,8 +65,11 @@ class TableList extends PureComponent {
     {
       title: 'Tên ảnh sản phẩm',
       key: 'image_name',
-      dataIndex: 'title',
+      // dataIndex: 'title',
       width: 200,
+      render: record => {
+       return <a href={`/production/${record.id}/detail`}>{record.title}</a>
+      }
     },
     {
       title: 'Ảnh',

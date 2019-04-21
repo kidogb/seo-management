@@ -39,4 +39,6 @@ export default {
   'menu.image': 'Ảnh sản phẩm',
   'menu.image.list': 'Danh sách ảnh sản phẩm',
   'menu.image.registration': 'Thêm ảnh sản phẩm',
+  'menu.users.registration': 'Thêm người dùng',
+  'menu.users': 'Người dùng',
 };

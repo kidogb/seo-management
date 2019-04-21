@@ -76,23 +76,23 @@ export default [
           }
         ]
       },
-      //customer
+      //user
       {
-        path: '/customer',
-        name: 'customer',
+        path: '/users',
+        name: 'users',
         icon: 'plus-square',
-        hideInMenu: true,
+        // hideInMenu: true,
 
         routes: [
+          // {
+          //   path: '/customer/list',
+          //   name: 'list',
+          //   component: './Customer/List',
+          // },
           {
-            path: '/customer/list',
-            name: 'list',
-            component: './Customer/List',
-          },
-          {
-            path: '/customer/registration',
+            path: '/users/registration',
             name: 'registration',
-            component: './Customer/Registration',
+            component: './User/UserRegistration',
           }
         ]
       },

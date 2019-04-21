@@ -1,10 +1,30 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import Link from 'umi/link';
+import {
+  Form,
+  Input,
+  DatePicker,
+  Select,
+  Button,
+  Card,
+  InputNumber,
+  Radio,
+  Icon,
+  Tooltip,
+  Switch,
+  Checkbox,
+  Row,
+  Col,
+  Upload,
+  Popover,
+  Progress,
+} from 'antd';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
+import styles from './style.less';
+import { message } from 'antd';
 import router from 'umi/router';
-import { Form, Input, Button, Select, Row, Col, Popover, Progress } from 'antd';
-import styles from './Register.less';
+import PicturesWall from '@/components/Upload';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -33,13 +53,12 @@ const passwordProgressMap = {
   pass: 'normal',
   poor: 'exception',
 };
-
-@connect(({ register, loading }) => ({
+@connect(({ loading, register }) => ({
   register,
   submitting: loading.effects['register/submit'],
 }))
 @Form.create()
-class Register extends Component {
+class UserRegistration extends PureComponent {
   state = {
     count: 0,
     confirmDirty: false,
@@ -65,17 +84,17 @@ class Register extends Component {
     clearInterval(this.interval);
   }
 
-  onGetCaptcha = () => {
-    let count = 59;
-    this.setState({ count });
-    this.interval = setInterval(() => {
-      count -= 1;
-      this.setState({ count });
-      if (count === 0) {
-        clearInterval(this.interval);
-      }
-    }, 1000);
-  };
+  // onGetCaptcha = () => {
+  //   let count = 59;
+  //   this.setState({ count });
+  //   this.interval = setInterval(() => {
+  //     count -= 1;
+  //     this.setState({ count });
+  //     if (count === 0) {
+  //       clearInterval(this.interval);
+  //     }
+  //   }, 1000);
+  // };
 
   getPasswordStatus = () => {
     const { form } = this.props;
@@ -101,6 +120,14 @@ class Register extends Component {
             ...values,
             prefix,
           },
+          callback: res => {
+            if (res && res.id) {
+              message.success('Tạo user thành công!');
+              router.push('/');
+            } else {
+              message.error('Lỗi khi tạo user!');
+            }
+          }
         });
       }
     });
@@ -173,17 +200,36 @@ class Register extends Component {
     ) : null;
   };
 
+
   render() {
     const { form, submitting } = this.props;
     const { getFieldDecorator } = form;
     const { count, prefix, help, visible } = this.state;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+        md: { span: 10 },
+      },
+    };
+
+    const submitFormLayout = {
+      wrapperCol: {
+        xs: { span: 24, offset: 0 },
+        sm: { span: 10, offset: 7 },
+      },
+    };
     return (
-      <div className={styles.main}>
-        <h3>
-          <FormattedMessage id="app.register.register" />
-        </h3>
+      <PageHeaderWrapper
+        title="Thêm user"
+      >
+        <Card bordered={false}>
         <Form onSubmit={this.handleSubmit}>
-        <FormItem>
+        <FormItem {...formItemLayout} label="Tên đăng nhập" >
             {getFieldDecorator('username', {
               rules: [
                 {
@@ -195,7 +241,7 @@ class Register extends Component {
               <Input size="large" placeholder="Tên đăng nhập" />
             )}
           </FormItem>
-          <FormItem>
+          <FormItem {...formItemLayout} label="Họ" >
             {getFieldDecorator('first_name', {
               rules: [
                 {
@@ -207,7 +253,7 @@ class Register extends Component {
               <Input size="large" placeholder="Họ" />
             )}
           </FormItem>
-          <FormItem>
+          <FormItem {...formItemLayout} label="Tên" >
             {getFieldDecorator('last_name', {
               rules: [
                 {
@@ -219,7 +265,7 @@ class Register extends Component {
               <Input size="large" placeholder="Tên" />
             )}
           </FormItem>
-          <FormItem>
+          <FormItem {...formItemLayout} label="Email" >
             {getFieldDecorator('email', {
               rules: [
                 {
@@ -235,7 +281,7 @@ class Register extends Component {
               <Input size="large" placeholder="Email" />
             )}
           </FormItem>
-          <FormItem help={help}>
+          <FormItem {...formItemLayout} label="Mật khẩu"  help={help}>
             <Popover
               getPopupContainer={node => node.parentNode}
               content={
@@ -266,7 +312,7 @@ class Register extends Component {
               )}
             </Popover>
           </FormItem>
-          <FormItem>
+          <FormItem {...formItemLayout} label="Nhập lại mật khẩu" >
             {getFieldDecorator('confirm', {
               rules: [
                 {
@@ -285,7 +331,7 @@ class Register extends Component {
               />
             )}
           </FormItem>
-          <FormItem>
+          <FormItem {...formItemLayout} label="Chức vụ" >
             <InputGroup compact>
               <Select
                 size="large"
@@ -307,7 +353,7 @@ class Register extends Component {
               })}
             </InputGroup>
           </FormItem>
-          <FormItem>
+          <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
             <Button
               size="large"
               loading={submitting}
@@ -315,16 +361,14 @@ class Register extends Component {
               type="primary"
               htmlType="submit"
             >
-              <FormattedMessage id="app.register.register" />
+              Đăng kí
             </Button>
-            <Link className={styles.login} to="/User/Login">
-              <FormattedMessage id="app.register.sign-in" />
-            </Link>
           </FormItem>
         </Form>
-      </div>
+        </Card>
+      </PageHeaderWrapper>
     );
   }
 }
 
-export default Register;
+export default UserRegistration;

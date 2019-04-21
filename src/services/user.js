@@ -14,3 +14,10 @@ export async function changePassword(params) {
     body: params,
   });
 }
+
+export async function registerUser(params) {
+  return request('/commonapis/users/', {
+    method: 'POST',
+    body: params,
+  });
+}

@@ -56,17 +56,13 @@ class SampleTableList extends PureComponent {
 
   columns = [
     {
-      title: 'ID',
-      key: 'product_id',
-      dataIndex: 'id',
-      width:10,
-      render: id => <a onClick={() => this.previewSample(id)}>{id}</a>,
-    },
-    {
       title: 'Tên mẫu',
       key: 'product_name',
-      dataIndex: 'ps_product_name',
+      // dataIndex: 'ps_product_name',
       width: 200,
+      render: record => {
+        return <a href='javascript:;' onClick={() => this.previewSample(record.id)}>{record.ps_product_name}</a>
+       }
     },
     {
       title: 'Category',

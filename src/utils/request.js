@@ -28,10 +28,10 @@ const checkStatus = response => {
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
-  notification.error({
-    message: `Lỗi ${response.status}: ${response.url}`,
-    description: errortext,
-  });
+  // notification.error({
+  //   message: `Lỗi ${response.status}: ${response.url}`,
+  //   description: errortext,
+  // });
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;

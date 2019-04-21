@@ -35,7 +35,6 @@ class DownloadExcel extends React.Component {
         return (isProductExport ? 
             (<ExcelFile  filename={filename} element={<Button type='primary' icon="download" >Xuất file excel</Button>}>
                 <ExcelSheet data={transformData} name={sheetName}>
-                    <ExcelColumn label="ID" value="id"/>
                     <ExcelColumn label="Category" value="ps_category_list_id"/>
                     <ExcelColumn label="Tên mẫu" value="ps_product_name"/>
                     <ExcelColumn label="Mô tả mẫu"  value="ps_product_description"/>
@@ -59,6 +58,10 @@ class DownloadExcel extends React.Component {
                     <ExcelColumn label="Ảnh 3" value="ps_img_3" />
                     <ExcelColumn label="Ảnh 4" value="ps_img_4" />
                     <ExcelColumn label="Ảnh 5" value="ps_img_5" />
+                    <ExcelColumn label="Ảnh 6" value="ps_img_6" />
+                    <ExcelColumn label="Ảnh 7" value="ps_img_7" />
+                    <ExcelColumn label="Ảnh 8" value="ps_img_8" />
+                    <ExcelColumn label="Ảnh 9" value="ps_img_9" />
                 </ExcelSheet>
             </ExcelFile>)
             : 
