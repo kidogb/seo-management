@@ -43,6 +43,12 @@ export default [
             path: '/production/registration',
             name: 'registration',
             component: './Production/Registration',
+          },
+          {
+            path: '/production/:id/variations/registration',
+            name: 'variations-registration',
+            component: './VariationsProduction/VariationsRegistration',
+            hideInMenu: true,
           }
         ]
       },

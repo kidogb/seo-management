@@ -41,4 +41,5 @@ export default {
   'menu.image.registration': 'Thêm ảnh sản phẩm',
   'menu.users.registration': 'Thêm người dùng',
   'menu.users': 'Người dùng',
+  'menu.variations-registration': 'Thêm variations',
 };

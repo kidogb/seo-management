@@ -48,9 +48,9 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
-      yield put (
-        routerRedux.push(`/production/list`));
+      if (callback) callback(response);
+      // else yield put (
+      //   routerRedux.push(`/production/list`));
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeProduct, payload);

@@ -17,6 +17,7 @@ import {
   Row,
   Col,
   Upload,
+  Modal,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
@@ -36,7 +37,9 @@ const { TextArea } = Input;
 class ProductRegistration extends PureComponent {
   state = {
     fileList: [
-    ]
+    ],
+    visible: false,
+    id: null,
   };
   transformSwitchValue = value => {
     if (value) return "Đóng";
@@ -44,7 +47,7 @@ class ProductRegistration extends PureComponent {
   }
   handleSubmit = e => {
     const { dispatch, form } = this.props;
-    const {fileList} = this.state;
+    const {fileList, visible} = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -61,6 +64,16 @@ class ProductRegistration extends PureComponent {
         dispatch({
           type: 'product/add',
           payload: {...values},
+          callback: (res) => {
+            if (res && res.id) {
+              this.setState({
+                visible: true,
+                id: res.id,
+              });
+            } else {
+              message.error ("Không thêm được sản phẩm");
+            }
+          }
         });
       }
     });
@@ -71,9 +84,15 @@ class ProductRegistration extends PureComponent {
     if (fileList.length > 5)  fileList = fileList.slice(-5);
     this.setState({ fileList });
   }
+  hideModal = () => {
+    this.setState({
+      visible: false,
+    })
+  }
+
   render() {
     const { submitting } = this.props;
-    const {fileList} = this.state;
+    const {fileList, visible, id} = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -95,12 +114,21 @@ class ProductRegistration extends PureComponent {
         sm: { span: 10, offset: 7 },
       },
     };
-
     return (
       <PageHeaderWrapper
         title="Thêm sản phẩm"
       >
         <Card bordered={false}>
+        {visible && id && <Modal title="Tạo variations"
+          visible={true}
+          onOk={() => {
+            router.push(`/production/${id}/variations/registration`);
+          }}
+          onCancel={this.hideModal}
+          okText="OK"
+          cancelText="Huỷ bỏ">
+          <p>Tạo thêm variations cho sản phẩm này</p>
+        </Modal>}
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="Tên sản phẩm">
               {getFieldDecorator('ps_product_name', {
