@@ -23,37 +23,58 @@ import styles from './style.less';
 import { message } from 'antd';
 import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
+import Link from 'umi/link';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading }) => ({
-  submitting: loading.effects['product/add'],
+@connect(({ loading, product }) => ({
+  submitting: loading.effects['variation/add'],
+  product: product.data,
 }))
 @Form.create()
 class VariationsRegistration extends PureComponent {
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const id = this.props.match.params.id;
+    const isnum = /^\d+$/.test(id);
+    if (!isnum) router.push('/exception/404');
+    else dispatch({
+      type: 'product/fetchDetail',
+      payload: id,
+    });
+  }
+
   handleSubmit = e => {
+    console.log(e);
     const { dispatch, form } = this.props;
-    const {fileList} = this.state;
+    const id = this.props.match.params.id;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         dispatch({
-          type: 'product/add',
-          payload: {...values},
+          type: 'variations/add',
+          payload: { ...values, product: id },
+          callback: (res) => {
+            if(res && res.id) {
+              message.success('Thêm variations thành công');
+              router.push(`/production/${id}/variations/list/`);
+            } else message.error('Không thể tạo variations');
+          }
         });
       }
     });
   };
 
   render() {
-    const { submitting } = this.props;
+    const { submitting, product } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
+    const id = this.props.match.params.id;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -78,55 +99,56 @@ class VariationsRegistration extends PureComponent {
         title="Thêm variations"
       >
         <Card bordered={false}>
+        <Link style={{fontSize: 'medium'}} {... submitFormLayout} to={`/production/${id}/detail/`}>{product ? product.ps_product_name : ''}</Link>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="Tên sản phẩm">
+            <FormItem {...formItemLayout} label="Variations Name">
               {getFieldDecorator('ps_variation_name', {
                 rules: [
                   {
                     required: true,
-                    message: "Tên sản phẩm không được để trống",
+                    message: "Variations Name không được để trống",
                   },
                 ],
-              })(<Input placeholder="Nhập tên sản phẩm" />)}
+              })(<Input placeholder="Variations Name" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="Giá">
+            <FormItem {...formItemLayout} label="Variations Price">
               {getFieldDecorator('ps_variation_price', {
                 rules: [
                   {
                     required: true,
-                    message: "Giá sản phẩm không được để trống!!!",
+                    message: "Variations Price không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
-                  placeholder="Nhập giá sản phẩm (VND)"
+                  style={{ minHeight: 32, width: '100%' }}
+                  placeholder="Variations Price (VND)"
                   formatter={value => `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\đ\s?|(,*)/g, '')}
                 />
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="Số lượng trong kho">
+            <FormItem {...formItemLayout} label="Variations Stock">
               {getFieldDecorator('ps_variation_stock', {
                 rules: [
                   {
                     required: true,
-                    message: "Số lượng sản phẩm không được để trống!!!",
+                    message: "Variations Stock không được để trống!!!",
                   },
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập số lượng sản phẩm"
                 />
               )}
             </FormItem>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
-                <FormattedMessage id="form.submit" />
+                Thêm
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/production/list`)}>
-                Cancel
+              <Button style={{ marginLeft: 8 }} onClick={() => router.push(`/production/${id}/variations/list/`)}>
+                Quay lại
               </Button>
             </FormItem>
           </Form>

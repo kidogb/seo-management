@@ -22,41 +22,11 @@ export default [
     routes: [
       // dashboard
       { path: '/', redirect: '/production/list' },
-      //production
-      {
-        path: '/production',
-        name: 'production',
-        icon: 'plus-square',
-        routes: [
-          {
-            path: '/production/list',
-            name: 'list',
-            component: './Production/List',
-          },
-          {
-            path: '/production/:id/detail',
-            name: 'detail',
-            component: './Production/Detail',
-            hideInMenu: true,
-          },
-          {
-            path: '/production/registration',
-            name: 'registration',
-            component: './Production/Registration',
-          },
-          {
-            path: '/production/:id/variations/registration',
-            name: 'variations-registration',
-            component: './VariationsProduction/VariationsRegistration',
-            hideInMenu: true,
-          }
-        ]
-      },
       //sample
       {
         path: '/sample',
         name: 'sample',
-        icon: 'plus-square',
+        icon: 'tag',
         routes: [
           {
             path: '/sample/list',
@@ -82,11 +52,65 @@ export default [
           }
         ]
       },
+      //production
+      {
+        path: '/production',
+        name: 'production',
+        icon: 'tags',
+        routes: [
+          {
+            path: '/production/list',
+            name: 'list',
+            component: './Production/List',
+          },
+          {
+            path: '/production/:id/detail',
+            name: 'detail',
+            component: './Production/Detail',
+            hideInMenu: true,
+          },
+          {
+            path: '/production/registration',
+            name: 'registration',
+            component: './Production/Registration',
+          },
+          {
+            path: '/production/:id/variations/registration',
+            name: 'variations-registration',
+            component: './VariationsProduction/VariationsRegistration',
+            hideInMenu: true,
+          },
+          {
+            path: '/production/:id/variations/list',
+            name: 'variations-list',
+            component: './VariationsProduction/VariationsList',
+            hideInMenu: true,
+          }
+        ]
+      },
+      //image
+      {
+        path: '/image',
+        name: 'image',
+        icon: 'file-jpg',
+        routes: [
+          {
+            path: '/image/list',
+            name: 'list',
+            component: './Image/List',
+          },
+          {
+            path: '/image/registration',
+            name: 'registration',
+            component: './Image/Registration',
+          }
+        ]
+      },
       //user
       {
         path: '/users',
         name: 'users',
-        icon: 'plus-square',
+        icon: 'user',
         // hideInMenu: true,
 
         routes: [
@@ -102,27 +126,9 @@ export default [
           }
         ]
       },
-      //image
-      {
-        path: '/image',
-        name: 'image',
-        icon: 'plus-square',
-        routes: [
-          {
-            path: '/image/list',
-            name: 'list',
-            component: './Image/List',
-          },
-          {
-            path: '/image/registration',
-            name: 'registration',
-            component: './Image/Registration',
-          }
-        ]
-      },
       {
         name: 'account',
-        icon: 'user',
+        icon: 'setting',
         path: '/account',
         routes: [
           {

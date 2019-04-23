@@ -21,6 +21,7 @@ import {
   Divider,
   Steps,
   Radio,
+  Tooltip,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -44,7 +45,7 @@ const getValue = obj =>
   loading: loading.models.product,
 }))
 @Form.create()
-class SampleTableList extends PureComponent {
+class ProductTableList extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
@@ -62,7 +63,7 @@ class SampleTableList extends PureComponent {
       width: 200,
       render: record => {
         return <a href='javascript:;' onClick={() => this.previewProduct(record.id)}>{record.ps_product_name}</a>
-       }
+      }
     },
     {
       title: 'Category',
@@ -85,7 +86,7 @@ class SampleTableList extends PureComponent {
             url: ps_img.file,
           });
         });
-        return <PicturesWall fileList={fileList} displayUploadButton={false} showRemoveIcon={false}/>;
+        return <PicturesWall fileList={fileList} displayUploadButton={false} showRemoveIcon={false} />;
       },
     },
     {
@@ -102,7 +103,7 @@ class SampleTableList extends PureComponent {
     },
     {
       title: 'Tồn kho',
-      key: 'product_stock', 
+      key: 'product_stock',
       dataIndex: 'ps_stock',
       width: 20,
     },
@@ -122,10 +123,11 @@ class SampleTableList extends PureComponent {
       key: 'product_action',
       fixed: 'right',
       render: (record) => (
-          <Button.Group>
-            <Button type="primary" ghost icon="eye" onClick={() => this.previewProduct(record.id)} />
-            <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveProduct(record.id)} />
-          </Button.Group>
+        <Button.Group>
+          <Tooltip placement="topLeft" title='Xem sản phẩm'><Button type="primary" ghost icon="eye" onClick={() => this.previewProduct(record.id)} /></Tooltip>
+          <Tooltip placement="topLeft" title='Thêm variations'><Button type="primary" icon="plus" ghost onClick={() => router.push(`/production/${record.id}/variations/list`)}></Button></Tooltip>
+          <Tooltip placement="topLeft" title='Xoá sản phẩm'><Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveProduct(record.id)} /></Tooltip>
+        </Button.Group>
       ),
     },
   ];
@@ -240,7 +242,7 @@ class SampleTableList extends PureComponent {
   };
 
   handleRemoveProduct = id => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'product/remove',
       payload: id,
@@ -302,7 +304,7 @@ class SampleTableList extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Category">
-            {getFieldDecorator('ps_category_list_id')(<Input placeholder="Nhập category" />)}
+              {getFieldDecorator('ps_category_list_id')(<Input placeholder="Nhập category" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -356,7 +358,7 @@ class SampleTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddProduct()}>
                 Thêm sản phẩm
               </Button>
-              {data.results && <DownloadExcel excelData={data.results} sheetName='Product' filename='export_product'/>}
+              {data.results && <DownloadExcel excelData={data.results} sheetName='Product' filename='export_product' />}
             </div>
             <StandardTable
               rowKey={record => record.id}
@@ -374,4 +376,4 @@ class SampleTableList extends PureComponent {
   }
 }
 
-export default SampleTableList;
+export default ProductTableList;

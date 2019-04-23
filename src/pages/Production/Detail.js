@@ -20,10 +20,28 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import ButtonGroup from 'antd/lib/button/button-group';
+import variations from '@/models/variations';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 12 },
+    sm: { span: 4 },
+  },
+  wrapperCol: {
+    xs: { span: 48 },
+    sm: { span: 24 },
+    md: { span: 16 },
+  },
+};
 
+const submitFormLayout = {
+  wrapperCol: {
+    xs: { span: 24, offset: 0 },
+    sm: { span: 10, offset: 7 },
+  },
+};
 @connect(({ product }) => ({
   product,
 }))
@@ -68,34 +86,52 @@ class ProductDetailForm extends PureComponent {
       }
     });
   }
+  renderVariations = (variations) => {
+     return variations.map((variation,i) => (
+      <div key={i+1}>
+          <FormItem {...formItemLayout} label={`Variations Name ${i+1}`} >
+              <TextArea
+                key="ps_variation_name"
+                style={{ minHeight: 32 }}
+                placeholder="Variations Name"
+                autosize={{ minRows: 2, maxRows: 6 }}
+                value={variation.ps_variation_name}
+                readOnly
+              />
+        </FormItem>
+        <FormItem {...formItemLayout} label={`Variations Price ${i+1}`} >
+              <TextArea
+                key="ps_variation_price"
+                style={{ minHeight: 32 }}
+                placeholder="Variations Price"
+                autosize={{ minRows: 2, maxRows: 6 }}
+                value={variation.ps_variation_price}
+                readOnly
+              />
+        </FormItem>
+        <FormItem {...formItemLayout} label={`Variations Stock ${i+1}`} >
+              <TextArea
+                key="ps_variation_stock"
+                style={{ minHeight: 32 }}
+                placeholder="Variations Stock"
+                autosize={{ minRows: 2, maxRows: 6 }}
+                value={variation.ps_variation_stock}
+                readOnly
+              />
+        </FormItem>
+        </div>
+      ));
+  }
   render() {
     const {
       form: { getFieldDecorator, getFieldValue }
     } = this.props;
-
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 12 },
-        sm: { span: 4 },
-      },
-      wrapperCol: {
-        xs: { span: 48 },
-        sm: { span: 24 },
-        md: { span: 16 },
-      },
-    };
-
-    const submitFormLayout = {
-      wrapperCol: {
-        xs: { span: 24, offset: 0 },
-        sm: { span: 10, offset: 7 },
-      },
-    };
     const {
       product: { data },
       loading,
     } = this.props;
     const id = this.props.match.params.id;
+    const variations  = (data && data.variation_product && data.variation_product.length > 0) ? this.renderVariations(data.variation_product) : null;
     return (
       <PageHeaderWrapper
         title="Thông tin sản phẩm"
@@ -141,6 +177,7 @@ class ProductDetailForm extends PureComponent {
             <FormItem {...formItemLayout} label="Thời gian ship (ngày)">
               <Input key="ps_days_to_ship" placeholder="Thời gian ship" value={data.ps_days_to_ship} readOnly />
             </FormItem>
+            {variations}
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
             <ButtonGroup>
                 <Button  key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveProuct(id)}>

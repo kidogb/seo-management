@@ -63,7 +63,7 @@ class StandardTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, needTotalList } = this.state;
-    const { data = {}, rowKey, ...rest } = this.props;
+    const { data = {}, rowKey, dataSource, scroll, ...rest } = this.props;
     const { results = [], count, next, previous} = data;
     const pagination = {
       total: count,
@@ -111,10 +111,10 @@ class StandardTable extends PureComponent {
         <Table
           rowKey={rowKey || 'key'}
           rowSelection={rowSelection}
-          dataSource={results}
+          dataSource={dataSource ? dataSource : results}
           pagination={paginationProps}
           onChange={this.handleTableChange}
-          scroll={{ x: 1600 }}
+          scroll={scroll ? scroll : { x: 1600 }}
           // useFixedHeader= {true}
           {...rest}
         />

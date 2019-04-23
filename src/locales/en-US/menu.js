@@ -10,7 +10,7 @@ export default {
   'menu.exception.not-find': '404',
   'menu.exception.server-error': '500',
   'menu.exception.trigger': 'Trigger',
-  'menu.account': 'Tài khoản',
+  'menu.account': 'Cài đặt',
   'menu.account.center': 'Account Center',
   'menu.account.settings': 'Cài đặt tài khoản',
   'menu.account.trigger': 'Trigger Error',
@@ -41,5 +41,6 @@ export default {
   'menu.image.registration': 'Thêm ảnh sản phẩm',
   'menu.users.registration': 'Thêm người dùng',
   'menu.users': 'Người dùng',
-  'menu.variations-registration': 'Thêm variations',
+  'menu.production.variations-registration': 'Thêm variations',
+  'menu.production.variations-list': 'Danh sách variations',
 };

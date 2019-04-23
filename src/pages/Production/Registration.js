@@ -87,7 +87,9 @@ class ProductRegistration extends PureComponent {
   hideModal = () => {
     this.setState({
       visible: false,
-    })
+    });
+    message.success('Tạo sản phẩm thành công');
+    router.push(`/production/list`);
   }
 
   render() {
@@ -122,12 +124,12 @@ class ProductRegistration extends PureComponent {
         {visible && id && <Modal title="Tạo variations"
           visible={true}
           onOk={() => {
-            router.push(`/production/${id}/variations/registration`);
+            router.push(`/production/${id}/variations/list`);
           }}
           onCancel={this.hideModal}
-          okText="OK"
-          cancelText="Huỷ bỏ">
-          <p>Tạo thêm variations cho sản phẩm này</p>
+          okText="Có"
+          cancelText="Không">
+          <p>Tạo sản phẩm thành công!! Bạn có muốn tạo thêm variations cho sản phẩm này</p>
         </Modal>}
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="Tên sản phẩm">
