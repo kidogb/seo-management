@@ -116,7 +116,7 @@ class SampleTableList extends PureComponent {
       title: 'Mô tả mẫu',
       key: 'product_description',
       dataIndex: 'ps_product_description',
-      width: 500,
+      width: 400,
     },
     {
       title: 'Hành động',

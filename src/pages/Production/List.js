@@ -117,6 +117,7 @@ class ProductTableList extends PureComponent {
       title: 'Mô tả sản phẩm',
       key: 'product_description',
       dataIndex: 'ps_product_description',
+      width: 400,
     },
     {
       title: 'Hành động',

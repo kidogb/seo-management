@@ -64,7 +64,7 @@ class StandardTable extends PureComponent {
   render() {
     const { selectedRowKeys, needTotalList } = this.state;
     const { data = {}, rowKey, dataSource, scroll, ...rest } = this.props;
-    const { results = [], count, next, previous} = data;
+    const { results = [], count, next, previous } = data;
     const pagination = {
       total: count,
       pageSize: 10,
@@ -82,7 +82,24 @@ class StandardTable extends PureComponent {
         disabled: record.disabled,
       }),
     };
-
+    const table = scroll ? (<Table
+      rowKey={rowKey || 'key'}
+      rowSelection={rowSelection}
+      dataSource={dataSource ? dataSource : results}
+      pagination={paginationProps}
+      onChange={this.handleTableChange}
+      scroll={{ x: 1600 }}
+      // useFixedHeader= {true}
+      {...rest}
+    />) : (<Table
+      rowKey={rowKey || 'key'}
+      rowSelection={rowSelection}
+      dataSource={dataSource ? dataSource : results}
+      pagination={paginationProps}
+      onChange={this.handleTableChange}
+      // useFixedHeader= {true}
+      {...rest}
+    />);
     return (
       <div className={styles.standardTable}>
         <div className={styles.tableAlert}>
@@ -108,16 +125,7 @@ class StandardTable extends PureComponent {
             showIcon
           />
         </div>
-        <Table
-          rowKey={rowKey || 'key'}
-          rowSelection={rowSelection}
-          dataSource={dataSource ? dataSource : results}
-          pagination={paginationProps}
-          onChange={this.handleTableChange}
-          scroll={scroll ? scroll : { x: 1600 }}
-          // useFixedHeader= {true}
-          {...rest}
-        />
+        {table}
       </div>
     );
   }

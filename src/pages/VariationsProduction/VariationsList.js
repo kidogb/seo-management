@@ -267,7 +267,7 @@ class VariationsTableList extends PureComponent {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              // scroll={false}
+              scroll={false}
             />}
           </div>
         </Card>

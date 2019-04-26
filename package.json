@@ -28,7 +28,8 @@
     "docker-prod:build": "docker-compose -f ./docker/docker-compose.yml build",
     "docker-hub:build": "docker build  -f Dockerfile.hub -t  ant-design-pro ./",
     "docker:tag": "docker tag ant-design-pro antdesign/ant-design-pro",
-    "docker:push": "npm run docker-hub:build && npm run docker:tag && docker push antdesign/ant-design-pro"
+    "docker:push": "npm run docker-hub:build && npm run docker:tag && docker push antdesign/ant-design-pro",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@antv/data-set": "^0.10.1",
