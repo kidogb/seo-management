@@ -1,6 +1,6 @@
 [[redirects]]
   from = "/commonapis/*"
-  to = "http://seoquanganh.herokuapp.com"
+  to = "http://seoquanganh.herokuapp.com/commonapis/*"
   status = 200
   force = true
   [redirects.headers]
