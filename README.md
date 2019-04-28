@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 English | [简体中文](./README.zh-CN.md) | [Русский](./README.ru-RU.md)
 
 <h1 align="center">Ant Design Pro</h1>
@@ -134,3 +135,7 @@ Any type of contribution is welcome, here are some examples of how you may contr
 - Use Ant Design Pro in your daily work.
 - Submit [issues](http://github.com/ant-design/ant-design-pro/issues) to report bugs or ask questions.
 - Propose [pull requests](http://github.com/ant-design/ant-design-pro/pulls) to improve our code.
+=======
+# seo-management
+SEO managemnt
+>>>>>>> 213096019052d78da0aef494577c39dae912014d
