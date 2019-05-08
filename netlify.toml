@@ -1,6 +1,6 @@
 [[redirects]]
-  from = "/api/*"
-  to = "https://us-central1-antd-pro.cloudfunctions.net/api/api/:splat"
+  from = "/commonapis/*"
+  to = "http://seoquanganh.herokuapp.com/commonapis/:splat"
   status = 200
   force = true
   [redirects.headers]
