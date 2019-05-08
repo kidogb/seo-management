@@ -45,6 +45,10 @@ export async function querySample(params) {
   return request(`/commonapis/samples?${stringify(params)}`);
 }
 
+export async function queryAllSample(params) {
+  return request(`/commonapis/samples?no_page&${stringify(params)}`);
+}
+
 export async function querySampleDetail(id) {
   return request(`/commonapis/samples/${id}`);
 }

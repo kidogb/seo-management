@@ -1,4 +1,4 @@
-import { updateSample, querySample, querySampleDetail, addSample, removeSample, addUploadFile} from '@/services/api';
+import { updateSample, querySample, queryAllSample, querySampleDetail, addSample, removeSample, addUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
@@ -11,6 +11,7 @@ export default {
       previous: null,
       next: null,
     },
+    totalData: [],
   },
 
   effects: {
@@ -20,7 +21,13 @@ export default {
         type: 'save',
         payload: response,
       });
-      
+    },
+    *fetchAll({ payload }, { call, put }) {
+      const response = yield call(queryAllSample, payload);
+      yield put({
+        type: 'saveAll',
+        payload: response,
+      });
     },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(querySampleDetail, payload);
@@ -77,6 +84,12 @@ export default {
       return {
         ...state,
         data: action.payload,
+      };
+    },
+    saveAll(state, action) {
+      return {
+        ...state,
+        totalData: action.payload,
       };
     },
   },

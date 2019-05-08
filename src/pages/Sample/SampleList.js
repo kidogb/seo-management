@@ -141,6 +141,9 @@ class SampleTableList extends PureComponent {
     dispatch({
       type: 'sample/fetch',
     });
+    dispatch({
+      type: 'sample/fetchAll',
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -362,7 +365,7 @@ class SampleTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
               </Button>
-              {data.results && <DownloadExcel isProductExport= {false} excelData={data.results} sheetName='Sample' filename='export_sample'/>}
+              {data.results && selectedRows.length > 0 && <DownloadExcel isProductExport= {false} excelData={selectedRows} sheetName='Sample' filename='export_sample'/>}
             </div>
             <StandardTable
               rowKey={record => record.id}
