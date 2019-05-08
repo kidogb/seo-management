@@ -345,7 +345,6 @@ class ProductTableList extends PureComponent {
       product: { data, totalData },
       loading,
     } = this.props;
-    console.log("TT: ", totalData);
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
