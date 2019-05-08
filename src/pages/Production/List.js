@@ -138,6 +138,9 @@ class ProductTableList extends PureComponent {
     dispatch({
       type: 'product/fetch',
     });
+    dispatch({
+      type: 'product/fetchAll',
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -214,6 +217,7 @@ class ProductTableList extends PureComponent {
   };
 
   handleSelectRows = rows => {
+    console.log('AAAdd');
     this.setState({
       selectedRows: rows,
     });
@@ -338,9 +342,10 @@ class ProductTableList extends PureComponent {
 
   render() {
     const {
-      product: { data },
+      product: { data, totalData },
       loading,
     } = this.props;
+    console.log("TT: ", totalData);
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -359,7 +364,7 @@ class ProductTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddProduct()}>
                 Thêm sản phẩm
               </Button>
-              {data.results && <DownloadExcel excelData={data.results} sheetName='Product' filename='export_product' />}
+              {data.results && selectedRows.length > 0 && <DownloadExcel excelData={selectedRows} sheetName='Product' filename='export_product' />}
             </div>
             <StandardTable
               rowKey={record => record.id}

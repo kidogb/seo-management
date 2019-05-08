@@ -1,4 +1,4 @@
-import { queryProduct, queryProductDetail, addProduct, removeProduct, addUploadFile } from '@/services/api';
+import { queryProduct, queryAllProduct, queryProductDetail, addProduct, removeProduct, addUploadFile } from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
@@ -11,6 +11,7 @@ export default {
       previous: null,
       next: null,
     },
+    totalData: [],
   },
 
   effects: {
@@ -22,6 +23,14 @@ export default {
       });
       
     },
+    *fetchAll({ payload }, { call, put }) {
+      const response = yield call(queryAllProduct, payload);
+      yield put ({
+        type: 'saveAll',
+        payload: response,
+      })
+    },
+
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryProductDetail, payload);
       yield put({
@@ -76,6 +85,12 @@ export default {
       return {
         ...state,
         data: action.payload,
+      };
+    },
+    saveAll(state, action) {
+      return {
+        ...state,
+        totalData: action.payload,
       };
     },
   },

@@ -13,6 +13,10 @@ export async function queryProduct(params) {
   return request(`/commonapis/products?${stringify(params)}`);
 }
 
+export async function queryAllProduct(params) {
+  return request(`/commonapis/products?no_page&${stringify(params)}`);
+}
+
 export async function queryProductDetail(id) {
   return request(`/commonapis/products/${id}`);
 }
