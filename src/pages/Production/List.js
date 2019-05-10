@@ -192,32 +192,31 @@ class ProductTableList extends PureComponent {
     });
   };
 
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+  // handleMenuClick = e => {
+  //   const { dispatch } = this.props;
+  //   const { selectedRows } = this.state;
 
-    if (selectedRows.length === 0) return;
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'product/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
+  //   if (selectedRows.length === 0) return;
+  //   switch (e.key) {
+  //     case 'remove':
+  //       dispatch({
+  //         type: 'product/remove',
+  //         payload: {
+  //           key: selectedRows.map(row => row.key),
+  //         },
+  //         callback: () => {
+  //           this.setState({
+  //             selectedRows: [],
+  //           });
+  //         },
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   handleSelectRows = rows => {
-    console.log('AAAdd');
     this.setState({
       selectedRows: rows,
     });
@@ -248,18 +247,29 @@ class ProductTableList extends PureComponent {
 
   handleRemoveProduct = id => {
     const { dispatch } = this.props;
+    const {selectedRows} = this.state;
     dispatch({
       type: 'product/remove',
       payload: id,
       callback: (res) => {
         if (!res) {
           message.success('Xoá sản phẩm thành công!!');
+          //remove if deleted row in selectedRows
+          this.setState({
+            selectedRows: selectedRows.filter(function (row) {
+              return row.id !== id;
+            }),
+          });
           dispatch({
             type: 'product/fetch',
             payload: {},
-          })
+          });
+          dispatch({
+            type: 'product/fetchAll',
+            payload: {},
+          });
         } else {
-          message.error('Không thể xoá sản phẩm!!')
+          message.error('Không thể xoá sản phẩm!!');
         }
       }
     });
@@ -369,6 +379,7 @@ class ProductTableList extends PureComponent {
               rowKey={record => record.id}
               selectedRows={selectedRows}
               loading={loading}
+              totalData={totalData}
               data={data}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}

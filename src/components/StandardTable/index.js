@@ -16,38 +16,33 @@ class StandardTable extends PureComponent {
   constructor(props) {
     super(props);
     const { columns } = props;
-    const needTotalList = initTotalList(columns);
-
     this.state = {
       selectedRowKeys: [],
-      needTotalList,
     };
   }
 
   static getDerivedStateFromProps(nextProps) {
     // clean state
     if (nextProps.selectedRows.length === 0) {
-      const needTotalList = initTotalList(nextProps.columns);
       return {
         selectedRowKeys: [],
-        needTotalList,
       };
+    } else return {
+      selectedRowKeys: nextProps.selectedRows.map(function (obj) {
+        return obj.id;
+      })
     }
-    return null;
+    // return null;
   }
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
-    let { needTotalList } = this.state;
-    needTotalList = needTotalList.map(item => ({
-      ...item,
-      total: selectedRows.reduce((sum, val) => sum + parseFloat(val[item.dataIndex], 10), 0),
-    }));
     const { onSelectRow } = this.props;
+
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
 
-    this.setState({ selectedRowKeys, needTotalList });
+    this.setState({ selectedRowKeys });
   };
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -62,8 +57,8 @@ class StandardTable extends PureComponent {
   };
 
   render() {
-    const { selectedRowKeys, needTotalList } = this.state;
-    const { data = {}, rowKey, dataSource, scroll, ...rest } = this.props;
+    const { selectedRowKeys } = this.state;
+    const { data = {}, rowKey, dataSource, scroll, totalData, onSelectRow, ...rest } = this.props;
     const { results = [], count, next, previous } = data;
     const pagination = {
       total: count,
@@ -75,17 +70,30 @@ class StandardTable extends PureComponent {
       ...pagination,
     };
 
+    const totalDataKeys = dataSource ? dataSourece.map(function (obj) {
+      return obj.id;
+    }) : totalData.map(function (obj) {
+      return obj.id;
+    });
     const rowSelection = {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,
       getCheckboxProps: record => ({
         disabled: record.disabled,
       }),
+      hideDefaultSelections: true,
+      selections: [{
+        key: 'all-data',
+        text: 'Chọn tất cả',
+        onSelect: () => {
+          this.handleRowSelectChange(totalDataKeys, totalData);
+        },
+      }],
     };
     const table = scroll ? (<Table
       rowKey={rowKey || 'key'}
       rowSelection={rowSelection}
-      dataSource={dataSource ? dataSource : results}
+      dataSource={dataSource ? dataSource : results} //for variation
       pagination={paginationProps}
       onChange={this.handleTableChange}
       scroll={{ x: 1600 }}
@@ -94,7 +102,7 @@ class StandardTable extends PureComponent {
     />) : (<Table
       rowKey={rowKey || 'key'}
       rowSelection={rowSelection}
-      dataSource={dataSource ? dataSource : results}
+      dataSource={dataSource ? dataSource : results}  //for variation
       pagination={paginationProps}
       onChange={this.handleTableChange}
       // useFixedHeader= {true}
@@ -107,17 +115,8 @@ class StandardTable extends PureComponent {
             message={
               <Fragment>
                 Đã chọn <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>
-                {needTotalList.map(item => (
-                  <span style={{ marginLeft: 8 }} key={item.dataIndex}>
-                    {item.title}
-                    总计&nbsp;
-                    <span style={{ fontWeight: 600 }}>
-                      {item.render ? item.render(item.total) : item.total}
-                    </span>
-                  </span>
-                ))}
                 <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
-                  Xoá
+                  Bỏ chọn
                 </a>
               </Fragment>
             }
