@@ -87,40 +87,40 @@ class ProductDetailForm extends PureComponent {
     });
   }
   renderVariations = (variations) => {
-     return variations.map((variation,i) => (
-      <div key={i+1}>
-          <FormItem {...formItemLayout} label={`Variations Name ${i+1}`} >
-              <TextArea
-                key="ps_variation_name"
-                style={{ minHeight: 32 }}
-                placeholder="Variations Name"
-                autosize={{ minRows: 2, maxRows: 6 }}
-                value={variation.ps_variation_name}
-                readOnly
-              />
+    return variations.map((variation, i) => (
+      <div key={i + 1}>
+        <FormItem {...formItemLayout} label={`Variations Name ${i + 1}`} >
+          <TextArea
+            key="ps_variation_name"
+            style={{ minHeight: 32 }}
+            placeholder="Variations Name"
+            autosize={{ minRows: 2, maxRows: 6 }}
+            value={variation.ps_variation_name}
+            readOnly
+          />
         </FormItem>
-        <FormItem {...formItemLayout} label={`Variations Price ${i+1}`} >
-              <TextArea
-                key="ps_variation_price"
-                style={{ minHeight: 32 }}
-                placeholder="Variations Price"
-                autosize={{ minRows: 2, maxRows: 6 }}
-                value={variation.ps_variation_price}
-                readOnly
-              />
+        <FormItem {...formItemLayout} label={`Variations Price ${i + 1}`} >
+          <TextArea
+            key="ps_variation_price"
+            style={{ minHeight: 32 }}
+            placeholder="Variations Price"
+            autosize={{ minRows: 2, maxRows: 6 }}
+            value={variation.ps_variation_price}
+            readOnly
+          />
         </FormItem>
-        <FormItem {...formItemLayout} label={`Variations Stock ${i+1}`} >
-              <TextArea
-                key="ps_variation_stock"
-                style={{ minHeight: 32 }}
-                placeholder="Variations Stock"
-                autosize={{ minRows: 2, maxRows: 6 }}
-                value={variation.ps_variation_stock}
-                readOnly
-              />
+        <FormItem {...formItemLayout} label={`Variations Stock ${i + 1}`} >
+          <TextArea
+            key="ps_variation_stock"
+            style={{ minHeight: 32 }}
+            placeholder="Variations Stock"
+            autosize={{ minRows: 2, maxRows: 6 }}
+            value={variation.ps_variation_stock}
+            readOnly
+          />
         </FormItem>
-        </div>
-      ));
+      </div>
+    ));
   }
   render() {
     const {
@@ -131,12 +131,17 @@ class ProductDetailForm extends PureComponent {
       loading,
     } = this.props;
     const id = this.props.match.params.id;
-    const variations  = (data && data.variation_product && data.variation_product.length > 0) ? this.renderVariations(data.variation_product) : null;
+    const variations = (data && data.variation_product && data.variation_product.length > 0) ? this.renderVariations(data.variation_product) : null;
     return (
       <PageHeaderWrapper
         title="Thông tin sản phẩm"
       >
         <Card bordered={false}>
+          <ButtonGroup style={{marginBottom: 10}}>
+            <Button key="btnAddVariation" icon= "plus" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/production/${id}/variations/list`)}>
+              Tạo variations
+              </Button>
+          </ButtonGroup>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="Tên sản phẩm" >
               <TextArea
@@ -179,8 +184,8 @@ class ProductDetailForm extends PureComponent {
             </FormItem>
             {variations}
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-            <ButtonGroup>
-                <Button  key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveProuct(id)}>
+              <ButtonGroup>
+                <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveProuct(id)}>
                   Xoá sản phẩm
               </Button>
                 <Button key="btnBack" style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>

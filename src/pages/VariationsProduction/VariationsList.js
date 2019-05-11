@@ -255,6 +255,9 @@ class VariationsTableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
+            <Button icon="left" onClick={() => router.push(`/production/${id}/detail`)}>
+                Quay lại
+              </Button>
               <Button icon="plus" type="primary" onClick={() => this.handleAddProductVariations(id)}>
                 Thêm variations
               </Button>
