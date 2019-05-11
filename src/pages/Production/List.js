@@ -376,6 +376,7 @@ class ProductTableList extends PureComponent {
               {data.results && selectedRows.length > 0 && <DownloadExcel excelData={selectedRows} sheetName='Product' filename='export_product' />}
             </div>
             <StandardTable
+              scroll
               rowKey={record => record.id}
               selectedRows={selectedRows}
               loading={loading}
