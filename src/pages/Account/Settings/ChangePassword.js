@@ -28,8 +28,10 @@ class ChangePassword extends PureComponent {
       if (!err) {
         dispatch({
           type: 'user/changePassword',
-          payload: {...values,
-          token: token.get()},
+          payload: {
+            ...values,
+            token: token.get()
+          },
           callback: (res) => {
             if (!res) message.error('Không thể thay đổi mật khẩu!!');
             else if (res.success) {
@@ -45,14 +47,24 @@ class ChangePassword extends PureComponent {
     });
   };
 
+  comparePassword = (rule, value, callback) => {
+    const form = this.props.form;
+    console.log(form.getFieldValue('old_password'));
+    if (value && value === form.getFieldValue('old_password')) {
+      callback('Mật khẩu mới phải khác mật khẩu cũ!');
+    } else {
+      callback();
+    }
+  }
+
   render() {
     const {
       form: { getFieldDecorator, getFieldValue }, onCancel,
-    submitting,} = this.props;
+      submitting, } = this.props;
     return (
       <Form hideRequiredMark>
-        <FormItem label="Nhập mât khẩu mới">
-          {getFieldDecorator('password', {
+        <FormItem label="Nhập mât khẩu">
+          {getFieldDecorator('old_password', {
             initialValue: '',
             rules: [
               {
@@ -62,14 +74,29 @@ class ChangePassword extends PureComponent {
                 message: "Mât khẩu phải ít nhất 8 kí tự",
               },
             ],
+          })(<Input type='password' id="oldPasswordInput" placeholder="Nhập mật khẩu" />)}
+        </FormItem>
+        <FormItem label="Nhập mât khẩu mới">
+          {getFieldDecorator('password', {
+            validateFirst: true,
+            initialValue: '',
+            rules: [
+              {
+                required: true,
+                type: 'string',
+                min: 8,
+                message: "Mât khẩu phải ít nhất 8 kí tự",
+              },
+              { validator: this.comparePassword, } 
+            ],
           })(<Input type='password' id="newPasswordInput" placeholder="Nhập mật khẩu mới" />)}
         </FormItem>
-        <div style={{float: "right", marginTop:"-15px"}}>
-          <Button style={{marginRight: "10px"}} key="btnBack" onClick={onCancel}>Quay lại</Button>
+        <div style={{ float: "right", marginTop: "-15px" }}>
+          <Button style={{ marginRight: "10px" }} key="btnBack" onClick={onCancel}>Quay lại</Button>
           <Button key="btnChangePassword" type="primary" onClick={this.handleSubmit} loading={submitting}>
             Thay đổi
           </Button>
-      </div>
+        </div>
       </Form>
     )
   }
