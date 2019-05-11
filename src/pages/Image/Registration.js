@@ -34,7 +34,6 @@ class ImageRegistration extends PureComponent {
   handleSubmit = e => {
     const { dispatch, form } = this.props;
     e.preventDefault();
-    console.log(form.getFieldsValue());
       event.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {

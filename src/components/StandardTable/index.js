@@ -69,12 +69,12 @@ class StandardTable extends PureComponent {
       // showQuickJumper: true,
       ...pagination,
     };
-
-    const totalDataKeys = dataSource ? dataSourece.map(function (obj) {
+    
+    const totalDataKeys = totalData ? dataSource ? dataSourece.map(function (obj) {
       return obj.id;
     }) : totalData.map(function (obj) {
       return obj.id;
-    });
+    }) : [];
     const rowSelection = {
       selectedRowKeys,
       onChange: this.handleRowSelectChange,

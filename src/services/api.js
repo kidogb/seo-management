@@ -77,6 +77,10 @@ export async function getUploadFile(params) {
   return request(`/commonapis/fileuploads?${stringify(params)}`);
 }
 
+export async function getAllUploadFile(params) {
+  return request(`/commonapis/fileuploads?no_page&${stringify(params)}`);
+}
+
 export async function addUploadFile(params) {
   let formData = new FormData();
   formData.append("file", params.file);

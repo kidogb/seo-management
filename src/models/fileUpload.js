@@ -1,4 +1,4 @@
-import { getUploadFile, addUploadFile} from '@/services/api';
+import { getUploadFile, getAllUploadFile, addUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
@@ -21,8 +21,20 @@ export default {
         payload: response,
       });
     },
+    *fetchAll({ payload }, { call, put }) {
+      const response = yield call(getAllUploadFile, payload);
+      yield put({
+        type: 'saveAll',
+        payload: response,
+      });
+    },
     *add({ payload, callback }, { call, put }) {
-      const response = yield call(addUploadFile, payload);
+      const file = payload.file;
+      const response = yield call(addUploadFile, {
+          title: payload.title,
+          note: payload.note,
+          file: payload.file.file.originFileObj,
+      });
       yield put({
         type: 'save',
         payload: response,
@@ -47,6 +59,12 @@ export default {
       return {
         ...state,
         data: action.payload,
+      };
+    },
+    saveAll(state, action) {
+      return {
+        ...state,
+        totalData: action.payload,
       };
     },
   },

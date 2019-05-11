@@ -67,7 +67,6 @@ export default {
       //   type: 'save',
       //   payload: response,
       // });
-      console.log("Response: ", response);
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {

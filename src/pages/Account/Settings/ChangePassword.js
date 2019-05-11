@@ -49,7 +49,6 @@ class ChangePassword extends PureComponent {
 
   comparePassword = (rule, value, callback) => {
     const form = this.props.form;
-    console.log(form.getFieldValue('old_password'));
     if (value && value === form.getFieldValue('old_password')) {
       callback('Mật khẩu mới phải khác mật khẩu cũ!');
     } else {

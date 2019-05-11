@@ -56,25 +56,17 @@ class TableList extends PureComponent {
 
   columns = [
     {
-      title: 'ID',
-      key: 'image_id',
-      dataIndex: 'id',
-      width:10,
-      render: id => <a onClick={() => this.previewItem(id)}>{id}</a>,
-    },
-    {
       title: 'Tên ảnh sản phẩm',
       key: 'image_name',
       // dataIndex: 'title',
       width: 200,
       render: record => {
-       return <a href={`/production/${record.id}/detail`}>{record.title}</a>
+       return <a href='javascript:;'>{record.title}</a>
       }
     },
     {
       title: 'Ảnh',
       key: 'image_file',
-      // dataIndex: 'file',
       width: 400,
       render: record => {
         let defaultFileList = [{
@@ -82,7 +74,7 @@ class TableList extends PureComponent {
           name: record.title,
           url: record.file,
         }];
-        return <PictureWall defaultFileList={defaultFileList} />;
+        return <PictureWall displayUploadButton={false} showRemoveIcon={false} fileList={defaultFileList} />;
       },
     },
     {
@@ -107,6 +99,9 @@ class TableList extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'fileUpload/fetch',
+    });
+    dispatch({
+      type: 'fileUpload/fetchAll',
     });
   }
 
@@ -159,29 +154,29 @@ class TableList extends PureComponent {
     });
   };
 
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+  // handleMenuClick = e => {
+  //   const { dispatch } = this.props;
+  //   const { selectedRows } = this.state;
 
-    if (selectedRows.length === 0) return;
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'product/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-      default:
-        break;
-    }
-  };
+  //   if (selectedRows.length === 0) return;
+  //   switch (e.key) {
+  //     case 'remove':
+  //       dispatch({
+  //         type: 'product/remove',
+  //         payload: {
+  //           key: selectedRows.map(row => row.key),
+  //         },
+  //         callback: () => {
+  //           this.setState({
+  //             selectedRows: [],
+  //           });
+  //         },
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   handleSelectRows = rows => {
     this.setState({
@@ -226,11 +221,10 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      fileUpload: { data },
+      fileUpload: { data , totalData },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    console.log("data: ", data);
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -245,14 +239,15 @@ class TableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleAddImage()}>
-                Thêm sản phẩm
+              <Button  style={{ marginBottom: 8 }} icon="plus" type="primary" onClick={() => this.handleAddImage()}>
+                Thêm ảnh
               </Button>
             </div>
             <StandardTable
               rowKey={record => record.id}
               selectedRows={selectedRows}
               loading={loading}
+              totalData={totalData}
               data={data}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
