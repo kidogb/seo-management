@@ -28,15 +28,18 @@ export default {
         const params = getPageQuery();
         let { redirect } = params;
         if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
+          if (redirect.includes('user/login')) redirect = '';
+          else {
+            const redirectUrlParams = new URL(redirect);
+            if (redirectUrlParams.origin === urlParams.origin) {
+              redirect = redirect.substr(urlParams.origin.length);
+              if (redirect.match(/^\/.*#/)) {
+                redirect = redirect.substr(redirect.indexOf('#') + 1);
+              }
+            } else {
+              window.location.href = redirect;
+              return;
             }
-          } else {
-            window.location.href = redirect;
-            return;
           }
         }
         yield put(routerRedux.replace(redirect || '/'));
@@ -66,7 +69,7 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority((payload && payload.user)?payload.user.user_type:'guest');
+      setAuthority((payload && payload.user) ? payload.user.user_type : 'guest');
       return {
         ...state,
         data: payload,
