@@ -23,14 +23,21 @@ import styles from './style.less';
 import { message } from 'antd';
 import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
+import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading }) => ({
+@connect(({ user, loading }) => ({
   submitting: loading.effects['sample/add'],
+  canAccessPermission: hasRole(
+    user.currentUser.user_type,
+    ROLES.ADMIN)
+    || hasRole(
+      user.currentUser.user_type,
+      ROLES.MANAGER),
 }))
 @Form.create()
 class SampleRegistration extends PureComponent {
@@ -39,6 +46,11 @@ class SampleRegistration extends PureComponent {
     ], 
     createProductCheck: false,
   };
+
+  componentDidMount(){
+    const {canAccessPermission} = this.props;
+    if (!canAccessPermission) router.push(FORBIDDEN_PAGE_PATH);
+  }
   transformSwitchValue = value => {
     if (value) return "Đóng";
     else return "Mở";
@@ -75,7 +87,7 @@ class SampleRegistration extends PureComponent {
    handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > 5)  fileList = fileList.slice(-5);
+    if (fileList.length > 9)  fileList = fileList.slice(-9);
     this.setState({ fileList });
   }
 

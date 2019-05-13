@@ -20,12 +20,14 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import ButtonGroup from 'antd/lib/button/button-group';
+import { hasRole, ROLES } from '@/common/permission';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ sample }) => ({
+@connect(({ user, sample }) => ({
   sample,
+  canEditSamplePermission: hasRole(user.currentUser.user_type, ROLES.ADMIN) || hasRole(user.currentUser.user_type, ROLES.MANAGER),
 }))
 @Form.create()
 class SampleDetailForm extends PureComponent {
@@ -70,9 +72,10 @@ class SampleDetailForm extends PureComponent {
   }
   render() {
     const {
-      form: { getFieldDecorator, getFieldValue }
+      form: { getFieldDecorator, getFieldValue },
+      canEditSamplePermission,
     } = this.props;
-
+    console.log ('canEditSamplePermission: ', canEditSamplePermission);
     const formItemLayout = {
       labelCol: {
         xs: { span: 12 },
@@ -142,16 +145,16 @@ class SampleDetailForm extends PureComponent {
               <Input key="ps_days_to_ship" placeholder="Thời gian ship" value={data.ps_days_to_ship} readOnly />
             </FormItem>
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
-            <ButtonGroup>
-                <Button  key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
+              <ButtonGroup>
+                {canEditSamplePermission && <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
                   Xoá mẫu
-              </Button>
-                <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/${id}/edit`)}>
+                </Button>}
+                {canEditSamplePermission && <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/${id}/edit`)}>
                   Cập nhật
-              </Button>
+                </Button>}
                 <Button key="btnBack" style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>
                   Quay lại
-              </Button>
+                </Button>
               </ButtonGroup>
             </FormItem>
           </Form>

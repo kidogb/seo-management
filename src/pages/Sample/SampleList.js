@@ -21,6 +21,7 @@ import {
   Divider,
   Steps,
   Radio,
+  Tooltip,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -74,7 +75,7 @@ class SampleTableList extends PureComponent {
       title: 'Ảnh',
       key: 'product_imgs',
       dataIndex: 'ps_imgs',
-      width: 400,
+      width: 1000,
       render: ps_imgs => {
         let fileList = [];
         ps_imgs.map(ps_img => {
@@ -117,6 +118,19 @@ class SampleTableList extends PureComponent {
       key: 'product_description',
       dataIndex: 'ps_product_description',
       width: 400,
+      onCell: () => {
+        return {
+           style: {
+              whiteSpace: 'nowrap',
+              maxWidth: 400,
+           }
+        }
+     },
+     render: (text) => (
+        <Tooltip title={text}>
+           <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{text}</div>
+        </Tooltip>
+     )
     },
     {
       title: 'Hành động',

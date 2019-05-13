@@ -24,7 +24,7 @@ export default class PicturesWall extends React.Component {
 
   render() {
     const { previewVisible, previewImage,  } = this.state;
-    const {maxFile=5, displayUploadButton=true, onChange={}, fileList=[], showPreviewIcon=true, showRemoveIcon=true} = this.props;
+    const {maxFile=9, displayUploadButton=true, onChange={}, fileList=[], showPreviewIcon=true, showRemoveIcon=true} = this.props;
     const uploadButton = displayUploadButton && (
       <div>
         <Icon type="plus" />

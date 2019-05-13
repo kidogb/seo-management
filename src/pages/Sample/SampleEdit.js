@@ -20,13 +20,20 @@ import {
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import PicturesWall from '@/components/Upload';
+import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ loading, sample }) => ({
+@connect(({ loading, user, sample }) => ({
   submitting: loading.effects['sample/update'],
   sample,
+  canAccessPermission: hasRole(
+    user.currentUser.user_type,
+    ROLES.ADMIN)
+    || hasRole(
+      user.currentUser.user_type,
+      ROLES.MANAGER),
 }))
 @Form.create()
 class SampleEditForm extends PureComponent {
@@ -35,8 +42,8 @@ class SampleEditForm extends PureComponent {
     ]
   };
   handleSubmit = e => {
-    const id = this.props.match.params.id; 
-    const { dispatch, form, sample:{data} } = this.props;
+    const id = this.props.match.params.id;
+    const { dispatch, form, sample: { data } } = this.props;
     const ps_imgs = data.ps_imgs.map(ps_img => ps_img.id);
     e.preventDefault();
     form.setFieldsValue({
@@ -56,7 +63,7 @@ class SampleEditForm extends PureComponent {
         else values.channel_50010_switch = "Đóng";
         dispatch({
           type: 'sample/update',
-          payload: {...values, id, ps_imgs},
+          payload: { ...values, id, ps_imgs },
         });
       }
     });
@@ -64,22 +71,27 @@ class SampleEditForm extends PureComponent {
   handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > 5)  fileList = fileList.slice(-5);
+    if (fileList.length > 5) fileList = fileList.slice(-5);
     this.setState({ fileList });
   }
   componentDidMount() {
-    const { dispatch } = this.props;
-    const id = this.props.match.params.id; 
-    dispatch({
-      type: 'sample/fetchDetail',
-      payload: id,
-      callback: (res) => {
-        if (res.id)
-          this.setState({
-            fileList: res.ps_imgs,
-          });
-      }
-    });
+    const { dispatch, user, canAccessPermission } = this.props;
+    if (canAccessPermission) {
+      const id = this.props.match.params.id;
+      dispatch({
+        type: 'sample/fetchDetail',
+        payload: id,
+        callback: (res) => {
+          if (res.id)
+            this.setState({
+              fileList: res.ps_imgs,
+            });
+        }
+      });
+    } else {
+      router.push(FORBIDDEN_PAGE_PATH);
+    }
+
   }
   getSampleImgs = files => {
     let defaultFileList = [];
@@ -95,7 +107,7 @@ class SampleEditForm extends PureComponent {
     return defaultFileList;
   }
   goBackToListScreen = id => {
-      router.push(`/sample/list`);
+    router.push(`/sample/list`);
   };
   // handleRemoveProduct = id => {
   //   const {dispatch} = this.props;
@@ -141,15 +153,15 @@ class SampleEditForm extends PureComponent {
       images,
       loading,
     } = this.props;
-    const id = this.props.match.params.id; 
-    const {fileList} = this.state;
+    const id = this.props.match.params.id;
+    const { fileList } = this.state;
     return (
       <PageHeaderWrapper
-        title= "Cập nhật thông tin mẫu"
+        title="Cập nhật thông tin mẫu"
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="Tên mẫu">
+            <FormItem {...formItemLayout} label="Tên mẫu">
               {getFieldDecorator('ps_product_name', {
                 initialValue: data.ps_product_name,
                 rules: [
@@ -170,9 +182,9 @@ class SampleEditForm extends PureComponent {
                     },
                   ],
                 }
-              )(<PicturesWall displayUploadButton={false} showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={this.getSampleImgs(fileList)}>
+              )(<PicturesWall displayUploadButton={false} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={this.getSampleImgs(fileList)}>
               </PicturesWall>)}
-                
+
             </FormItem>
             <FormItem {...formItemLayout} label="Thông tin mẫu">
               {getFieldDecorator('ps_product_description', {
@@ -185,7 +197,7 @@ class SampleEditForm extends PureComponent {
                 ],
               })(
                 <TextArea
-                  style={{ minHeight: 32 , minWidth: 32}}
+                  style={{ minHeight: 32, minWidth: 32 }}
                   placeholder="Nhập thông tin mẫu"
                   rows={4}
                 />
@@ -214,7 +226,7 @@ class SampleEditForm extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập giá mẫu (VND)"
                   formatter={value => `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\đ\s?|(,*)/g, '')}
@@ -232,7 +244,7 @@ class SampleEditForm extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập khối lượng mẫu (g)"
                   formatter={value => `g ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\g\s?|(,*)/g, '')}
@@ -250,7 +262,7 @@ class SampleEditForm extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập số lượng mẫu"
                 />
               )}
@@ -266,7 +278,7 @@ class SampleEditForm extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập thời gian ship"
                 />
               )}
@@ -303,7 +315,7 @@ class SampleEditForm extends PureComponent {
               <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }} loading={submitting}>
                 Câp nhật
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={()=>this.goBackToListScreen()}>
+              <Button style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>
                 Quay lại
               </Button>
             </FormItem>

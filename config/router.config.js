@@ -27,6 +27,7 @@ export default [
         path: '/sample',
         name: 'sample',
         icon: 'tag',
+        authority: ['Admin', 'Quản lý', 'Cộng tác viên'],
         routes: [
           {
             path: '/sample/list',
@@ -44,11 +45,13 @@ export default [
             name: 'edit',
             component: './Sample/SampleEdit',
             hideInMenu: true,
+            // authority: ['Admin', 'Quản lý'],
           },
           {
             path: '/sample/registration',
             name: 'registration',
             component: './Sample/SampleRegistration',
+            authority: ['Admin', 'Quản lý'],
           }
         ]
       },
@@ -57,6 +60,7 @@ export default [
         path: '/production',
         name: 'production',
         icon: 'tags',
+        authority: ['Admin', 'Cộng tác viên'],
         routes: [
           {
             path: '/production/list',
@@ -112,7 +116,7 @@ export default [
         name: 'users',
         icon: 'user',
         // hideInMenu: true,
-
+        authority: ['Admin', 'Quản lý'],
         routes: [
           // {
           //   path: '/customer/list',
@@ -149,6 +153,30 @@ export default [
                 component: './Account/Settings/SecurityView',
               },
             ],
+          },
+        ],
+      },
+      {
+        name: 'exception',
+        icon: 'warning',
+        path: '/exception',
+        hideInMenu: true,
+        routes: [
+          // exception
+          {
+            path: '/exception/403',
+            name: 'not-permission',
+            component: './Exception/403',
+          },
+          {
+            path: '/exception/404',
+            name: 'not-find',
+            component: './Exception/404',
+          },
+          {
+            path: '/exception/500',
+            name: 'server-error',
+            component: './Exception/500',
           },
         ],
       },

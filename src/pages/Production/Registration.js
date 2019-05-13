@@ -81,7 +81,7 @@ class ProductRegistration extends PureComponent {
    handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > 5)  fileList = fileList.slice(-5);
+    if (fileList.length > 9)  fileList = fileList.slice(-9);
     this.setState({ fileList });
   }
   hideModal = () => {
