@@ -28,6 +28,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
+import { hasRole, ROLES } from '@/common/permission';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -40,9 +41,10 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ sample, loading }) => ({
+@connect(({ sample, user, loading }) => ({
   sample,
   loading: loading.models.sample,
+  canEditSamplePermission: hasRole(user.currentUser.user_type, ROLES.ADMIN) || hasRole(user.currentUser.user_type, ROLES.MANAGER),
 }))
 @Form.create()
 class SampleTableList extends PureComponent {
@@ -139,7 +141,7 @@ class SampleTableList extends PureComponent {
       render: (record) => (
           <Button.Group>
             <Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} />
-            <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />
+            {this.props.canEditSamplePermission && <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />}
           </Button.Group>
       ),
     },
