@@ -29,6 +29,28 @@ import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 
+class EllipsisTooltip extends React.Component {
+  state = {
+    visible: false
+  }
+  handleVisibleChange = (visible) => {
+    if (this.container.clientWidth < this.container.scrollWidth) {
+      this.setState({
+        visible: visible
+      })
+    }
+  }
+  render() {
+    return (
+      <Tooltip visible={this.state.visible} onVisibleChange={this.handleVisibleChange} title={this.props.title}>
+        <div ref={node => this.container = node} style={{
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+        }}>{this.props.children}</div>
+      </Tooltip>
+    )
+  }
+}
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -118,6 +140,20 @@ class ProductTableList extends PureComponent {
       key: 'product_description',
       dataIndex: 'ps_product_description',
       width: 400,
+      // ellipsize:true,
+      onCell: () => {
+        return {
+           style: {
+              whiteSpace: 'nowrap',
+              maxWidth: 400,
+           }
+        }
+     },
+     render: (text) => (
+        <Tooltip title={text}>
+           <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{text}</div>
+        </Tooltip>
+     )
     },
     {
       title: 'Hành động',
