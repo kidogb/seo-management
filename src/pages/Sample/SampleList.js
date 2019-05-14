@@ -391,7 +391,7 @@ class SampleTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
               </Button>
-              {data.results && selectedRows.length > 0 && <DownloadExcel isProductExport= {false} excelData={selectedRows} sheetName='Sample' filename='export_sample'/>}
+              {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport= {false} excelData={selectedRows} sheetName='Sample' filename='export_sample'/>}
             </div>
             <StandardTable
               scroll

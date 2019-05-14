@@ -24,14 +24,23 @@ import styles from './style.less';
 import { message } from 'antd';
 import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
+import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
+
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading }) => ({
+@connect(({ loading, user }) => ({
+  user,
   submitting: loading.effects['product/add'],
+  canAccessPermission: hasRole(
+    user.currentUser.user_type,
+    ROLES.ADMIN)
+    || hasRole(
+      user.currentUser.user_type,
+      ROLES.USER),
 }))
 @Form.create()
 class ProductRegistration extends PureComponent {
@@ -41,6 +50,15 @@ class ProductRegistration extends PureComponent {
     visible: false,
     id: null,
   };
+
+  componentDidMount() {
+    const { canAccessPermission, user } = this.props;
+    console.log('USer: ',user);
+    if (!canAccessPermission) {
+      router.push(FORBIDDEN_PAGE_PATH);
+    }
+  }
+
   transformSwitchValue = value => {
     if (value) return "Đóng";
     else return "Mở";

@@ -28,6 +28,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
+import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -40,9 +41,15 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ product, loading }) => ({
+@connect(({ product, user, loading }) => ({
   product,
   loading: loading.models.product,
+  canAccessPermission: hasRole(
+    user.currentUser.user_type,
+    ROLES.ADMIN)
+    || hasRole(
+      user.currentUser.user_type,
+      ROLES.USER),
 }))
 @Form.create()
 class ProductTableList extends PureComponent {
@@ -148,13 +155,17 @@ class ProductTableList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'product/fetch',
-    });
-    dispatch({
-      type: 'product/fetchAll',
-    });
+    const { dispatch, canAccessPermission } = this.props;
+    if (canAccessPermission) {
+      dispatch({
+        type: 'product/fetch',
+      });
+      dispatch({
+        type: 'product/fetchAll',
+      });
+    } else {
+      router.push(FORBIDDEN_PAGE_PATH);
+    }
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -369,15 +380,7 @@ class ProductTableList extends PureComponent {
       product: { data, totalData },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
+    const { selectedRows, modalVisible, } = this.state;
     return (
       <PageHeaderWrapper title="Danh sách sản phẩm">
         <Card bordered={false}>
@@ -387,7 +390,7 @@ class ProductTableList extends PureComponent {
               <Button icon="plus" type="primary" onClick={() => this.handleAddProduct()}>
                 Thêm sản phẩm
               </Button>
-              {data.results && selectedRows.length > 0 && <DownloadExcel excelData={selectedRows} sheetName='Product' filename='export_product' />}
+              {data && data.results && selectedRows.length > 0 && <DownloadExcel excelData={selectedRows} sheetName='Product' filename='export_product' />}
             </div>
             <StandardTable
               scroll

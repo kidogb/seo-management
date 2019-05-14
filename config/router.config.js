@@ -21,7 +21,7 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/production/list' },
+      { path: '/', redirect: '/sample/list' },
       //sample
       {
         path: '/sample',

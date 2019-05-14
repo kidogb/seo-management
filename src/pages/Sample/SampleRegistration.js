@@ -31,6 +31,7 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 @connect(({ user, loading }) => ({
+  user,
   submitting: loading.effects['sample/add'],
   canAccessPermission: hasRole(
     user.currentUser.user_type,
@@ -48,7 +49,7 @@ class SampleRegistration extends PureComponent {
   };
 
   componentDidMount(){
-    const {canAccessPermission} = this.props;
+    const {canAccessPermission, user} = this.props;
     if (!canAccessPermission) router.push(FORBIDDEN_PAGE_PATH);
   }
   transformSwitchValue = value => {
