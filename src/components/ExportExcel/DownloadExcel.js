@@ -22,7 +22,7 @@ class DownloadExcel extends React.Component {
                         newData[`ps_img_${i+1}`] = value.file;
                     });
                 } else if (key === 'variation_product') {
-                    data.ps_imgs.map((value, i) => {
+                    data.variation_product.map((value, i) => {
                         newData[`variation_product_${i+1}_name`] = value.ps_variation_name;
                         newData[`variation_product_${i+1}_price`] = value.ps_variation_price;
                         newData[`variation_product_${i+1}_stock`] = value.ps_variation_stock;
