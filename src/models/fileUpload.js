@@ -11,6 +11,8 @@ export default {
       previous: null,
       next: null,
     },
+    totalData: [],
+    listFileId: [], // list
   },
 
   effects: {
@@ -44,6 +46,24 @@ export default {
       yield put (
         routerRedux.push(`/image/list`));
     },
+    *addMultiFile ({payload, callback}, {call, put}) {
+      let ps_imgs = [];
+      const uploadResList = yield payload.map(file =>{
+        return call(addUploadFile, {
+          title: file.name,
+          note: file.name,
+          file: file.originFileObj,
+        });
+      });
+      yield uploadResList.map(uploadRes => {
+        if(uploadRes.id) ps_imgs.push(uploadRes.id);
+      });
+      yield put({
+        type: 'saveMultiFile',
+        payload: ps_imgs,
+      });
+      if (callback) callback(ps_imgs); 
+    }
     // *remove({ payload, callback }, { call, put }) {
     //   const response = yield call(removeRule, payload);
     //   yield put({
@@ -65,6 +85,12 @@ export default {
       return {
         ...state,
         totalData: action.payload,
+      };
+    },
+    saveMultiFile(state, action) {
+      return {
+        ...state,
+        listFileId: action.payload,
       };
     },
   },

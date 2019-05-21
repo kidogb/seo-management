@@ -89,24 +89,12 @@ export default [
             name: 'variations-list',
             component: './VariationsProduction/VariationsList',
             hideInMenu: true,
-          }
-        ]
-      },
-      //image
-      {
-        path: '/image',
-        name: 'image',
-        icon: 'file-jpg',
-        routes: [
-          {
-            path: '/image/list',
-            name: 'list',
-            component: './Image/List',
           },
           {
-            path: '/image/registration',
-            name: 'registration',
-            component: './Image/Registration',
+            path: '/production/:id/images/list',
+            name: 'images-list',
+            component: './Image/ProductImageList',
+            hideInMenu: true,
           }
         ]
       },

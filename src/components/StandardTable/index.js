@@ -2,15 +2,15 @@ import React, { PureComponent, Fragment } from 'react';
 import { Table, Alert } from 'antd';
 import styles from './index.less';
 
-function initTotalList(columns) {
-  const totalList = [];
-  columns.forEach(column => {
-    if (column.needTotal) {
-      totalList.push({ ...column, total: 0 });
-    }
-  });
-  return totalList;
-}
+// function initTotalList(columns) {
+//   const totalList = [];
+//   columns.forEach(column => {
+//     if (column.needTotal) {
+//       totalList.push({ ...column, total: 0 });
+//     }
+//   });
+//   return totalList;
+// }
 
 class StandardTable extends PureComponent {
   constructor(props) {
@@ -18,6 +18,7 @@ class StandardTable extends PureComponent {
     const { columns } = props;
     this.state = {
       selectedRowKeys: [],
+      checkedTotal: false,
     };
   }
 
@@ -57,13 +58,13 @@ class StandardTable extends PureComponent {
   };
 
   render() {
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, checkedTotal } = this.state;
     const { data = {}, rowKey, dataSource, scroll, totalData, onSelectRow, ...rest } = this.props;
     const { results = [], count, next, previous } = data;
     const pagination = {
       total: count,
       pageSize: 10,
-    };
+    }; 
     const paginationProps = {
       // showSizeChanger: true,
       // showQuickJumper: true,
@@ -87,6 +88,9 @@ class StandardTable extends PureComponent {
         text: 'Chọn tất cả',
         onSelect: () => {
           this.handleRowSelectChange(totalDataKeys, totalData);
+          this.setState({
+            checkedTotal: !checkedTotal,
+          })
         },
       }],
     };

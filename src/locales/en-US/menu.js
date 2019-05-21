@@ -36,7 +36,7 @@ export default {
   'menu.customer': 'Khách hàng',
   'menu.customer.list': 'Danh sách khách hàng',
   'menu.customer.registration': 'Thêm khách hàng',
-  'menu.image': 'Ảnh sản phẩm',
+  'menu.production.images-list': 'Ảnh sản phẩm',
   'menu.image.list': 'Danh sách ảnh sản phẩm',
   'menu.image.registration': 'Thêm ảnh sản phẩm',
   'menu.users.registration': 'Thêm người dùng',

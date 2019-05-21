@@ -25,8 +25,9 @@ import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ loading, user, sample }) => ({
+@connect(({ loading, user, sample , fileUpload}) => ({
   submitting: loading.effects['sample/update'],
+  listFileId: fileUpload.listFileId,
   sample,
   canAccessPermission: hasRole(
     user.currentUser.user_type,
@@ -39,40 +40,67 @@ const { TextArea } = Input;
 class SampleEditForm extends PureComponent {
   state = {
     fileList: [
-    ]
+    ], // for old images file
+    newFileList: [], //for new images file
   };
   handleSubmit = e => {
+    e.preventDefault();
     const id = this.props.match.params.id;
     const { dispatch, form, sample: { data } } = this.props;
-    const ps_imgs = data.ps_imgs.map(ps_img => ps_img.id);
-    e.preventDefault();
-    form.setFieldsValue({
-      upload: data.ps_imgs,
-    });
-    form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
-        else values.channel_50012_switch = "Đóng";
-        if (values.channel_50011_switch) values.channel_50011_switch = "Mở";
-        else values.channel_50011_switch = "Đóng";
-        if (values.channel_50015_switch) values.channel_50015_switch = "Mở";
-        else values.channel_50015_switch = "Đóng";
-        if (values.channel_50016_switch) values.channel_50016_switch = "Mở";
-        else values.channel_50016_switch = "Đóng";
-        if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
-        else values.channel_50010_switch = "Đóng";
-        dispatch({
-          type: 'sample/update',
-          payload: { ...values, id, ps_imgs },
-        });
-      }
-    });
+    const {fileList, newFileList} = this.state;
+    let ps_imgs  = [];
+    // if (fileList.length > 0) {
+      fileList.map(file => ps_imgs.push(file.id));
+    // }
+    // if (newFileList.length > 0) {
+      // upload images
+      dispatch ({
+        type: 'fileUpload/addMultiFile',
+        payload: newFileList,
+        callback: (fileListId => {
+          console.log(fileListId);
+          fileListId.map(id => ps_imgs.push(id));
+          form.setFieldsValue({
+            upload: ps_imgs,
+          });
+          form.validateFieldsAndScroll((err, values) => {
+            if (!err) {
+              if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
+              else values.channel_50012_switch = "Đóng";
+              if (values.channel_50011_switch) values.channel_50011_switch = "Mở";
+              else values.channel_50011_switch = "Đóng";
+              if (values.channel_50015_switch) values.channel_50015_switch = "Mở";
+              else values.channel_50015_switch = "Đóng";
+              if (values.channel_50016_switch) values.channel_50016_switch = "Mở";
+              else values.channel_50016_switch = "Đóng";
+              if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
+              else values.channel_50010_switch = "Đóng";
+              dispatch({
+                type: 'sample/update',
+                payload: { ...values, id, ps_imgs },
+              });
+            }
+          });
+        }),
+      });
+    // }
   };
   handleChangeUpload = (info) => {
-    let fileList = info.fileList;
+    let newFileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > 5) fileList = fileList.slice(-5);
-    this.setState({ fileList });
+    if (newFileList.length > 9) newFileList = newFileList.slice(-9);
+    this.setState({ newFileList });
+    console.log(newFileList);
+  }
+  handleRemoveUpload = (obj) => {
+    console.log('Obj: ', obj);
+    const { fileList } = this.state; 
+    const updatedFileList = fileList.filter(file => {
+      return file.id !== obj.uid;
+    });
+    this.setState({fileList: updatedFileList});
+    console.log('Updated File List: ', updatedFileList);
+
   }
   componentDidMount() {
     const { dispatch, user, canAccessPermission } = this.props;
@@ -93,6 +121,7 @@ class SampleEditForm extends PureComponent {
     }
 
   }
+  
   getSampleImgs = files => {
     let defaultFileList = [];
     files.map(file => {
@@ -150,11 +179,10 @@ class SampleEditForm extends PureComponent {
     };
     const {
       sample: { data },
-      images,
       loading,
     } = this.props;
     const id = this.props.match.params.id;
-    const { fileList } = this.state;
+    const { fileList, newFileList } = this.state;
     return (
       <PageHeaderWrapper
         title="Cập nhật thông tin mẫu"
@@ -182,8 +210,21 @@ class SampleEditForm extends PureComponent {
                     },
                   ],
                 }
-              )(<PicturesWall displayUploadButton={false} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={this.getSampleImgs(fileList)}>
-              </PicturesWall>)}
+              )(<div>
+                <PicturesWall displayUploadButton={false}
+                  showPreviewIcon={true}
+                  showRemoveIcon={true}
+                  onRemove = {(obj) => this.handleRemoveUpload(obj)}
+                  fileList={this.getSampleImgs(fileList)}>
+                </PicturesWall>
+                <PicturesWall displayUploadButton={true}
+                  showPreviewIcon={true}
+                  showRemoveIcon={true}
+                  onChange={(info) => this.handleChangeUpload(info)}
+                  fileList={newFileList}>
+                </PicturesWall>
+              </div>)
+              }
 
             </FormItem>
             <FormItem {...formItemLayout} label="Thông tin mẫu">

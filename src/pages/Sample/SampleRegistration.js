@@ -90,6 +90,7 @@ class SampleRegistration extends PureComponent {
     // 1. Limit the number of uploaded files
     if (fileList.length > 9)  fileList = fileList.slice(-9);
     this.setState({ fileList });
+    console.log('AAAA: ', fileList);
   }
 
   render() {
