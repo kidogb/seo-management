@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import './index.less';
-import { Table, Input, Button, Popconfirm, Form } from 'antd';
+import { Table, Input, Button, Popconfirm, Form, InputNumber } from 'antd';
 
 const EditableContext = React.createContext();
 
@@ -41,7 +41,7 @@ class EditableCell extends React.Component {
 
   renderCell = form => {
     this.form = form;
-    const { children, dataIndex, record, title } = this.props;
+    const { children, dataIndex, record, title, inputType } = this.props;
     const { editing } = this.state;
     return editing ? (
       <Form.Item style={{ margin: 0 }}>
@@ -49,11 +49,12 @@ class EditableCell extends React.Component {
           rules: [
             {
               required: true,
-              message: `${title} is required.`,
+              message: `${title} không được trống.`,
             },
           ],
           initialValue: record[dataIndex],
-        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
+        })(inputType === 'string' ? <Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />
+          : <InputNumber style={{width:'100%'}} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
       </Form.Item>
     ) : (
         <div
@@ -70,6 +71,7 @@ class EditableCell extends React.Component {
     const {
       editable,
       dataIndex,
+      inputType,
       title,
       record,
       index,
@@ -97,18 +99,21 @@ export default class VariationTable extends React.Component {
       {
         title: 'Variation Name',
         dataIndex: 'ps_variation_name',
+        inputType: 'string',
         width: '35%',
         editable: editable,
       },
       {
         title: 'Variation Price',
         dataIndex: 'ps_variation_price',
+        inputType: 'number',
         width: '30%',
         editable: editable,
       },
       {
         title: 'Variation Stock',
         dataIndex: 'ps_variation_stock',
+        inputType: 'number',
         width: '30%',
         editable: editable,
       },
@@ -118,49 +123,12 @@ export default class VariationTable extends React.Component {
         width: '5%',
         render: (text, record) =>
           editable ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-              <Button type="danger" icon="delete" ghost /> 
+            <Popconfirm title="Xoá variation?" onConfirm={() => handleDelete(record.key)}>
+              <Button type="danger" icon="delete" ghost />
             </Popconfirm>) : null
       },
     ];
-
-    // this.state = {
-    //   dataSource: [
-    //   ],
-    //   count: 0,
-    // };
   }
-
-  // handleDelete = key => {
-  //   const dataSource = [...this.state.dataSource];
-  //   this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-
-  // };
-
-  // handleAdd = () => {
-  //   const { count, dataSource } = this.state;
-  //   const newData = {
-  //     key: count,
-  //     ps_variation_name: `name`,
-  //     ps_variation_price: `price`,
-  //     ps_variation_stock: `stock`,
-  //   };
-  //   this.setState({
-  //     dataSource: [...dataSource, newData],
-  //     count: count + 1,
-  //   });
-  // };
-
-  // handleSave = row => {
-  //   const newData = [...this.state.dataSource];
-  //   const index = newData.findIndex(item => row.key === item.key);
-  //   const item = newData[index];
-  //   newData.splice(index, 1, {
-  //     ...item,
-  //     ...row,
-  //   });
-  //   this.setState({ dataSource: newData });
-  // };
 
   render() {
     const { dataSource } = this.props;
@@ -181,6 +149,7 @@ export default class VariationTable extends React.Component {
           record,
           editable: col.editable,
           dataIndex: col.dataIndex,
+          inputType: col.inputType,
           title: col.title,
           handleSave: handleSave,
         }),

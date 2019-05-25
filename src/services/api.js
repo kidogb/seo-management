@@ -41,6 +41,18 @@ export async function addVariations(payload) {
   });
 }
 
+export async function updateVariations(payload) {
+  return request(`/commonapis/variationproducts/${payload.id}/`, {
+    method: 'PUT',
+    body: payload,
+  });
+}
+
+export async function removeVariations(id) {
+  return request(`/commonapis/variationproducts/${id}/`, {
+    method: 'DELETE',
+  });
+}
 
 export async function querySample(params) {
   return request(`/commonapis/samples?${stringify(params)}`);

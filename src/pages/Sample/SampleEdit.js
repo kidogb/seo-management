@@ -26,7 +26,7 @@ import VariationTable from '@/components/VariationTable';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ loading, user, sample , fileUpload}) => ({
+@connect(({ loading, user, sample, fileUpload }) => ({
   submitting: loading.effects['sample/update'],
   listFileId: fileUpload.listFileId,
   sample,
@@ -40,10 +40,12 @@ const { TextArea } = Input;
 @Form.create()
 class SampleEditForm extends PureComponent {
   state = {
-    fileList: [
-    ], // for old images file
+    fileList: [], // for old images file
     newFileList: [], //for new images file
-    variationList: [],
+    variationList: [], // for variation
+    // newVariationList: [], // for add new variation
+    count: 0,  // for count nunmber of new variation
+    numberOldVariation: 0,  //index to determine old variation
   };
 
   componentDidMount() {
@@ -57,7 +59,9 @@ class SampleEditForm extends PureComponent {
           if (res.id)
             this.setState({
               fileList: res.ps_imgs,
-              variationList: res.variation_sample,
+              variationList: res.variation_sample.map((v, i) => { return { ...v, key: i } }),
+              count: res.variation_sample.length,
+              numberOldVariation: res.variation_sample.length,
             });
         }
       });
@@ -71,41 +75,66 @@ class SampleEditForm extends PureComponent {
     e.preventDefault();
     const id = this.props.match.params.id;
     const { dispatch, form, sample: { data } } = this.props;
-    const {fileList, newFileList} = this.state;
-    let ps_imgs  = [];
+    const { fileList, newFileList, variationList, numberOldVariation } = this.state;
+    let ps_imgs = [];
+
+    let oldVariationList =[];
+    let newVariationList = [];
+    variationList.filter(variation => {
+      if (variation.id) {
+        oldVariationList.push({ ...variation, sample: id });
+      } else {
+        newVariationList.push({ ...variation, sample: id });
+      }
+    });
+
     // if (fileList.length > 0) {
-      fileList.map(file => ps_imgs.push(file.id));
+    fileList.map(file => ps_imgs.push(file.id));
     // }
     // if (newFileList.length > 0) {
-      // upload images
-      dispatch ({
-        type: 'fileUpload/addMultiFile',
-        payload: newFileList,
-        callback: (fileListId => {
-          fileListId.map(id => ps_imgs.push(id));
-          form.setFieldsValue({
-            upload: ps_imgs,
-          });
-          form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
-              if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
-              else values.channel_50012_switch = "Đóng";
-              if (values.channel_50011_switch) values.channel_50011_switch = "Mở";
-              else values.channel_50011_switch = "Đóng";
-              if (values.channel_50015_switch) values.channel_50015_switch = "Mở";
-              else values.channel_50015_switch = "Đóng";
-              if (values.channel_50016_switch) values.channel_50016_switch = "Mở";
-              else values.channel_50016_switch = "Đóng";
-              if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
-              else values.channel_50010_switch = "Đóng";
+    // upload images
+    dispatch({
+      type: 'fileUpload/addMultiFile',
+      payload: newFileList,
+      callback: (fileListId => {
+        fileListId.map(id => ps_imgs.push(id));
+        form.setFieldsValue({
+          upload: ps_imgs,
+        });
+        form.validateFieldsAndScroll((err, values) => {
+          if (!err) {
+            if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
+            else values.channel_50012_switch = "Đóng";
+            if (values.channel_50011_switch) values.channel_50011_switch = "Mở";
+            else values.channel_50011_switch = "Đóng";
+            if (values.channel_50015_switch) values.channel_50015_switch = "Mở";
+            else values.channel_50015_switch = "Đóng";
+            if (values.channel_50016_switch) values.channel_50016_switch = "Mở";
+            else values.channel_50016_switch = "Đóng";
+            if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
+            else values.channel_50010_switch = "Đóng";
+            if (oldVariationList.length > 0) {
               dispatch({
-                type: 'sample/update',
-                payload: { ...values, id, ps_imgs },
+                type: 'variations/updateMultiVariation',
+                // payload: variationList.slice(0, numberOldVariation),
+                payload: oldVariationList,
               });
             }
-          });
-        }),
-      });
+            if (newVariationList.length > 0) {
+              dispatch({
+                type: 'variations/addMultiVariation',
+                // payload: variationList.slice(numberOldVariation, variationList.length),
+                payload: newVariationList,
+              })
+            }
+            dispatch({
+              type: 'sample/update',
+              payload: { ...values, id, ps_imgs },
+            });
+          }
+        });
+      }),
+    });
     // }
   }
 
@@ -117,13 +146,13 @@ class SampleEditForm extends PureComponent {
   }
 
   handleRemoveUpload = (obj) => {
-    const { fileList } = this.state; 
+    const { fileList } = this.state;
     const updatedFileList = fileList.filter(file => {
       return file.id !== obj.uid;
     });
-    this.setState({fileList: updatedFileList});
+    this.setState({ fileList: updatedFileList });
   }
-  
+
   getSampleImgs = files => {
     let defaultFileList = [];
     files.map(file => {
@@ -141,9 +170,17 @@ class SampleEditForm extends PureComponent {
   goBackToListScreen = id => {
     router.push(`/sample/list`);
   };
-  
+
   handleDelete = key => {
+    const { dispatch } = this.props;
     const variationList = [...this.state.variationList];
+    const deleteVariation = variationList.filter(item => item.key === key);
+    if (deleteVariation[0].id) {
+      dispatch({
+        type: 'variations/remove',
+        payload: deleteVariation[0].id,
+      });
+    }
     this.setState({ variationList: variationList.filter(item => item.key !== key) });
   };
 
@@ -236,7 +273,7 @@ class SampleEditForm extends PureComponent {
                 <PicturesWall displayUploadButton={false}
                   showPreviewIcon={true}
                   showRemoveIcon={true}
-                  onRemove = {(obj) => this.handleRemoveUpload(obj)}
+                  onRemove={(obj) => this.handleRemoveUpload(obj)}
                   fileList={this.getSampleImgs(fileList)}>
                 </PicturesWall>
                 <PicturesWall displayUploadButton={true}
