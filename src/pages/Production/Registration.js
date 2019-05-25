@@ -53,7 +53,6 @@ class ProductRegistration extends PureComponent {
 
   componentDidMount() {
     const { canAccessPermission, user } = this.props;
-    console.log('USer: ',user);
     if (!canAccessPermission) {
       router.push(FORBIDDEN_PAGE_PATH);
     }

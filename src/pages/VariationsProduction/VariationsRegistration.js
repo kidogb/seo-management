@@ -49,7 +49,6 @@ class VariationsRegistration extends PureComponent {
   }
 
   handleSubmit = e => {
-    console.log(e);
     const { dispatch, form } = this.props;
     const id = this.props.match.params.id;
     e.preventDefault();

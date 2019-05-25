@@ -104,7 +104,6 @@ class SampleRegistration extends PureComponent {
       const payload = variationList.map(variation => {
         return {... variation, sample: sample_id}
       });
-      console.log ("Payload: ", payload);
       dispatch({
         type: 'variations/addMultiVariation',
         payload: payload,

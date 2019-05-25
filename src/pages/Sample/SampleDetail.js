@@ -76,7 +76,6 @@ class SampleDetailForm extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       canEditSamplePermission,
     } = this.props;
-    console.log ('canEditSamplePermission: ', canEditSamplePermission);
     const formItemLayout = {
       labelCol: {
         xs: { span: 12 },

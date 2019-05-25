@@ -82,7 +82,6 @@ class SampleEditForm extends PureComponent {
         type: 'fileUpload/addMultiFile',
         payload: newFileList,
         callback: (fileListId => {
-          console.log(fileListId);
           fileListId.map(id => ps_imgs.push(id));
           form.setFieldsValue({
             upload: ps_imgs,
@@ -115,18 +114,14 @@ class SampleEditForm extends PureComponent {
     // 1. Limit the number of uploaded files
     if (newFileList.length > 9) newFileList = newFileList.slice(-9);
     this.setState({ newFileList });
-    console.log(newFileList);
   }
 
   handleRemoveUpload = (obj) => {
-    console.log('Obj: ', obj);
     const { fileList } = this.state; 
     const updatedFileList = fileList.filter(file => {
       return file.id !== obj.uid;
     });
     this.setState({fileList: updatedFileList});
-    console.log('Updated File List: ', updatedFileList);
-
   }
   
   getSampleImgs = files => {
@@ -179,7 +174,7 @@ class SampleEditForm extends PureComponent {
     this.setState({ variationList: newData });
   };
 
-  
+
   render() {
     const { submitting } = this.props;
     const {

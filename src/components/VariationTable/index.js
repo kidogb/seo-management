@@ -93,8 +93,6 @@ export default class VariationTable extends React.Component {
   constructor(props) {
     super(props);
     const { handleDelete, dataSource, editable } = this.props;
-    console.log(dataSource);
-    console.log(handleDelete);
     this.columns = [
       {
         title: 'Variation Name',
