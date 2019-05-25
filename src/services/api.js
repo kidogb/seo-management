@@ -34,12 +34,13 @@ export async function removeProduct(id) {
   });
 }
 
-export async function addProductVariations(payload) {
+export async function addVariations(payload) {
   return request('/commonapis/variationproducts/', {
     method: 'POST',
     body: payload,
   });
 }
+
 
 export async function querySample(params) {
   return request(`/commonapis/samples?${stringify(params)}`);

@@ -21,6 +21,7 @@ import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import ButtonGroup from 'antd/lib/button/button-group';
 import { hasRole, ROLES } from '@/common/permission';
+import VariationTable from '@/components/VariationTable';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -144,6 +145,10 @@ class SampleDetailForm extends PureComponent {
             <FormItem {...formItemLayout} label="Thời gian ship (ngày)">
               <Input key="ps_days_to_ship" placeholder="Thời gian ship" value={data.ps_days_to_ship} readOnly />
             </FormItem>
+            <VariationTable
+              dataSource={data.variation_sample}
+              editable={false}
+            />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <ButtonGroup>
                 {canEditSamplePermission && <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>

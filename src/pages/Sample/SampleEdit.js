@@ -21,6 +21,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
+import VariationTable from '@/components/VariationTable';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -42,7 +43,30 @@ class SampleEditForm extends PureComponent {
     fileList: [
     ], // for old images file
     newFileList: [], //for new images file
+    variationList: [],
   };
+
+  componentDidMount() {
+    const { dispatch, user, canAccessPermission } = this.props;
+    if (canAccessPermission) {
+      const id = this.props.match.params.id;
+      dispatch({
+        type: 'sample/fetchDetail',
+        payload: id,
+        callback: (res) => {
+          if (res.id)
+            this.setState({
+              fileList: res.ps_imgs,
+              variationList: res.variation_sample,
+            });
+        }
+      });
+    } else {
+      router.push(FORBIDDEN_PAGE_PATH);
+    }
+
+  }
+
   handleSubmit = e => {
     e.preventDefault();
     const id = this.props.match.params.id;
@@ -84,7 +108,8 @@ class SampleEditForm extends PureComponent {
         }),
       });
     // }
-  };
+  }
+
   handleChangeUpload = (info) => {
     let newFileList = info.fileList;
     // 1. Limit the number of uploaded files
@@ -92,6 +117,7 @@ class SampleEditForm extends PureComponent {
     this.setState({ newFileList });
     console.log(newFileList);
   }
+
   handleRemoveUpload = (obj) => {
     console.log('Obj: ', obj);
     const { fileList } = this.state; 
@@ -100,25 +126,6 @@ class SampleEditForm extends PureComponent {
     });
     this.setState({fileList: updatedFileList});
     console.log('Updated File List: ', updatedFileList);
-
-  }
-  componentDidMount() {
-    const { dispatch, user, canAccessPermission } = this.props;
-    if (canAccessPermission) {
-      const id = this.props.match.params.id;
-      dispatch({
-        type: 'sample/fetchDetail',
-        payload: id,
-        callback: (res) => {
-          if (res.id)
-            this.setState({
-              fileList: res.ps_imgs,
-            });
-        }
-      });
-    } else {
-      router.push(FORBIDDEN_PAGE_PATH);
-    }
 
   }
   
@@ -135,24 +142,44 @@ class SampleEditForm extends PureComponent {
     });
     return defaultFileList;
   }
+
   goBackToListScreen = id => {
     router.push(`/sample/list`);
   };
-  // handleRemoveProduct = id => {
-  //   const {dispatch} = this.props;
-  //   dispatch({
-  //     type: 'sample/remove',
-  //     payload: id,
-  //     callback: (res) => {
-  //       if (!res) {
-  //         message.success('Xoá mẫu thành công!!');
-  //         router.push(`/sample/list`);
-  //       } else {
-  //         message.error('Không thể xoá mẫu!!')
-  //       }
-  //     }
-  //   });
-  // }
+  
+  handleDelete = key => {
+    const variationList = [...this.state.variationList];
+    this.setState({ variationList: variationList.filter(item => item.key !== key) });
+  };
+
+  handleAdd = () => {
+    const { count, variationList } = this.state;
+    const newData = {
+      key: count,
+      ps_variation_name: `name`,
+      ps_variation_price: 0,
+      ps_variation_stock: 0,
+    };
+    this.setState({
+      variationList: [...variationList, newData],
+      count: count + 1,
+    });
+  };
+
+  // handle save to variationList when user click outside
+  handleSave = row => {
+    const { variationList } = this.state;
+    const newData = [...variationList];
+    const index = newData.findIndex(item => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    this.setState({ variationList: newData });
+  };
+
+  
   render() {
     const { submitting } = this.props;
     const {
@@ -182,7 +209,7 @@ class SampleEditForm extends PureComponent {
       loading,
     } = this.props;
     const id = this.props.match.params.id;
-    const { fileList, newFileList } = this.state;
+    const { fileList, newFileList, variationList } = this.state;
     return (
       <PageHeaderWrapper
         title="Cập nhật thông tin mẫu"
@@ -349,6 +376,13 @@ class SampleEditForm extends PureComponent {
                 <Switch />
               )}
             </Form.Item>
+            <VariationTable
+              dataSource={variationList}
+              handleAdd={this.handleAdd}
+              handleDelete={this.handleDelete}
+              handleSave={this.handleSave}
+              editable={true}
+            />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               {/* <Button type="primary" htmlType="submit" loading={submitting}>
                 Chỉnh sửa

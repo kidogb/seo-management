@@ -17,12 +17,14 @@ import {
   Row,
   Col,
   Upload,
+  notification,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import { message } from 'antd';
 import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
+import VariationTable from '@/components/VariationTable';
 import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
 
 const FormItem = Form.Item;
@@ -46,16 +48,88 @@ class SampleRegistration extends PureComponent {
     fileList: [
     ], 
     createProductCheck: false,
+    variationList: [],
+    count: 0,
   };
 
   componentDidMount(){
     const {canAccessPermission, user} = this.props;
     if (!canAccessPermission) router.push(FORBIDDEN_PAGE_PATH);
   }
+
+   handleChangeUpload = (info) => {
+    let fileList = info.fileList;
+    // 1. Limit the number of uploaded files
+    if (fileList.length > 9)  fileList = fileList.slice(-9);
+    this.setState({ fileList });
+    console.log('AAAA: ', fileList);
+  }
+
+  handleDelete = key => {
+    const variationList = [...this.state.variationList];
+    this.setState({ variationList: variationList.filter(item => item.key !== key) });
+  };
+
+  handleAdd = () => {
+    const { count, variationList } = this.state;
+    const newData = {
+      key: count,
+      ps_variation_name: `name`,
+      ps_variation_price: 0,
+      ps_variation_stock: 0,
+    };
+    this.setState({
+      variationList: [...variationList, newData],
+      count: count + 1,
+    });
+  };
+
+  // handle save to variationList when user click outside
+  handleSave = row => {
+    const { variationList } = this.state;
+    const newData = [...variationList];
+    const index = newData.findIndex(item => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    this.setState({ variationList: newData });
+  };
+
+  handleCreateVariation = (sample_id) => {
+    const { variationList } = this.state;
+    const {dispatch} = this.props;
+    if (variationList.length > 0) {
+      const payload = variationList.map(variation => {
+        return {... variation, sample: sample_id}
+      });
+      console.log ("Payload: ", payload);
+      dispatch({
+        type: 'variations/addMultiVariation',
+        payload: payload,
+        callback: (res) => {
+          if (res.length === payload.length) {
+            notification.success({
+              message: "Thành công!",
+              description: 'Sample đã được tạo thành công'
+            });
+          } else {
+            notification.error({
+              message: `Lỗi tạo variations!`,
+              description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
+            });
+          }
+        }
+      })
+    }
+  }
+
   transformSwitchValue = value => {
     if (value) return "Đóng";
     else return "Mở";
   }
+
   handleSubmit = e => {
     const { dispatch, form } = this.props;
     const {fileList} = this.state;
@@ -81,21 +155,24 @@ class SampleRegistration extends PureComponent {
         dispatch({
           type: 'sample/add',
           payload: {...values},
+          callback: (res) => {
+            if(res && res.id) {
+              this.handleCreateVariation(res.id);
+            } else {
+              notification.error({
+                message: 'Có lỗi khi tạo sample!! Vui lòng tạo lại!',
+                description: ''
+              });
+            }
+          }
         });
       }
     });
   };
-   handleChangeUpload = (info) => {
-    let fileList = info.fileList;
-    // 1. Limit the number of uploaded files
-    if (fileList.length > 9)  fileList = fileList.slice(-9);
-    this.setState({ fileList });
-    console.log('AAAA: ', fileList);
-  }
 
   render() {
     const { submitting } = this.props;
-    const {fileList, createProductCheck} = this.state;
+    const {fileList, createProductCheck, variationList} = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -269,6 +346,13 @@ class SampleRegistration extends PureComponent {
                 </PicturesWall>
               )}
             </Form.Item>
+            <VariationTable
+              dataSource={variationList}
+              handleAdd={this.handleAdd}
+              handleDelete={this.handleDelete}
+              handleSave={this.handleSave}
+              editable={true}
+            />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
                 Tạo mẫu

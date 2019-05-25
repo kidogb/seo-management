@@ -55,7 +55,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
       yield put (
         routerRedux.push(`/sample/list`));
     },
