@@ -11,6 +11,7 @@ export default {
 
   state: {
     currentAuthority: 'guest',
+    status: undefined,
   },
 
   effects: {
@@ -51,6 +52,7 @@ export default {
       yield put({
         type: 'changeLoginStatus',
         payload: {
+          status: false,
           token: '',
           currentAuthority: 'guest',
         },
@@ -73,6 +75,7 @@ export default {
       return {
         ...state,
         data: payload,
+        status: (payload && payload.user) ? 'ok' : 'error',
       };
     },
   },

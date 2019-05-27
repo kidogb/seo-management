@@ -26,16 +26,10 @@ import VariationTable from '@/components/VariationTable';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ loading, user, sample, fileUpload }) => ({
+@connect(({ loading, sample, fileUpload }) => ({
   submitting: loading.effects['sample/update'],
   listFileId: fileUpload.listFileId,
   sample,
-  canAccessPermission: hasRole(
-    user.currentUser.user_type,
-    ROLES.ADMIN)
-    || hasRole(
-      user.currentUser.user_type,
-      ROLES.MANAGER),
 }))
 @Form.create()
 class SampleEditForm extends PureComponent {
@@ -49,26 +43,21 @@ class SampleEditForm extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, user, canAccessPermission } = this.props;
-    if (canAccessPermission) {
-      const id = this.props.match.params.id;
-      dispatch({
-        type: 'sample/fetchDetail',
-        payload: id,
-        callback: (res) => {
-          if (res.id)
-            this.setState({
-              fileList: res.ps_imgs,
-              variationList: res.variation_sample.map((v, i) => { return { ...v, key: i } }),
-              count: res.variation_sample.length,
-              numberOldVariation: res.variation_sample.length,
-            });
-        }
+    const { dispatch } = this.props;
+    const id = this.props.match.params.id;
+    dispatch({
+      type: 'sample/fetchDetail',
+      payload: id,
+      callback: (res) => {
+        if (res.id)
+          this.setState({
+            fileList: res.ps_imgs,
+            variationList: res.variation_sample.map((v, i) => { return { ...v, key: i } }),
+            count: res.variation_sample.length,
+            numberOldVariation: res.variation_sample.length,
+          });
+      }
       });
-    } else {
-      router.push(FORBIDDEN_PAGE_PATH);
-    }
-
   }
 
   handleSubmit = e => {

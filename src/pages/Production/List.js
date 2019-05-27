@@ -41,15 +41,9 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ product, user, loading }) => ({
+@connect(({ product, loading }) => ({
   product,
-  loading: loading.models.product,
-  canAccessPermission: hasRole(
-    user.currentUser.user_type,
-    ROLES.ADMIN)
-    || hasRole(
-      user.currentUser.user_type,
-      ROLES.USER),
+  loading: loading.models.product
 }))
 @Form.create()
 class ProductTableList extends PureComponent {
@@ -155,17 +149,13 @@ class ProductTableList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch, canAccessPermission } = this.props;
-    if (canAccessPermission) {
-      dispatch({
-        type: 'product/fetch',
-      });
-      dispatch({
-        type: 'product/fetchAll',
-      });
-    } else {
-      router.push(FORBIDDEN_PAGE_PATH);
-    }
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'product/fetch',
+    });
+    dispatch({
+      type: 'product/fetchAll',
+    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {

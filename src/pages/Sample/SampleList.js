@@ -29,6 +29,7 @@ import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 import { hasRole, ROLES } from '@/common/permission';
+import {getAuthority} from '@/utils/authority';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -41,10 +42,9 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ sample, user, loading }) => ({
+@connect(({ sample, loading }) => ({
   sample,
   loading: loading.models.sample,
-  canEditSamplePermission: hasRole(user.currentUser.user_type, ROLES.ADMIN) || hasRole(user.currentUser.user_type, ROLES.MANAGER),
 }))
 @Form.create()
 class SampleTableList extends PureComponent {
@@ -54,8 +54,28 @@ class SampleTableList extends PureComponent {
     expandForm: false,
     selectedRows: [],
     formValues: {},
-    stepFormValues: {},
+    authority: undefined,
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    const authority = localStorage.getItem('antd-pro-authority');
+    this.setState({
+      authority: authority,
+    });
+    dispatch({
+      type: 'sample/fetch',
+    });
+    dispatch({
+      type: 'sample/fetchAll',
+    });
+  }
+
+  canAddEditSamplePermission = (authority) => {
+    if (!authority) return false;
+    if (authority.includes('Admin')  || authority.includes('Quản lý')) return true;
+    return false;
+  }
 
   columns = [
     {
@@ -141,7 +161,7 @@ class SampleTableList extends PureComponent {
       render: (record) => (
           <Button.Group>
             <Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} />
-            {this.props.canEditSamplePermission && <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />}
+            {this.canAddEditSamplePermission(this.state.authority) && <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />}
           </Button.Group>
       ),
     },
@@ -150,16 +170,6 @@ class SampleTableList extends PureComponent {
   generateColumns = (data) => {
     let columns = [];
 
-  }
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sample/fetch',
-    });
-    dispatch({
-      type: 'sample/fetchAll',
-    });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -210,30 +220,6 @@ class SampleTableList extends PureComponent {
       expandForm: !expandForm,
     });
   };
-
-  // handleMenuClick = e => {
-  //   const { dispatch } = this.props;
-  //   const { selectedRows } = this.state;
-
-  //   if (selectedRows.length === 0) return;
-  //   switch (e.key) {
-  //     case 'remove':
-  //       dispatch({
-  //         type: 'sample/remove',
-  //         payload: {
-  //           key: selectedRows.map(row => row.key),
-  //         },
-  //         callback: () => {
-  //           this.setState({
-  //             selectedRows: [],
-  //           });
-  //         },
-  //       });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
 
   handleSelectRows = rows => {
     this.setState({
@@ -373,7 +359,7 @@ class SampleTableList extends PureComponent {
       sample: { data, totalData },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, authority } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -388,9 +374,9 @@ class SampleTableList extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
+             { this.canAddEditSamplePermission(authority) && <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
-              </Button>
+              </Button>}
               {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport= {false} excelData={selectedRows} sheetName='Sample' filename='export_sample'/>}
             </div>
             <StandardTable

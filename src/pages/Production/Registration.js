@@ -32,15 +32,8 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ loading, user }) => ({
-  user,
+@connect(({ loading }) => ({
   submitting: loading.effects['product/add'],
-  canAccessPermission: hasRole(
-    user.currentUser.user_type,
-    ROLES.ADMIN)
-    || hasRole(
-      user.currentUser.user_type,
-      ROLES.USER),
 }))
 @Form.create()
 class ProductRegistration extends PureComponent {
@@ -50,13 +43,6 @@ class ProductRegistration extends PureComponent {
     visible: false,
     id: null,
   };
-
-  componentDidMount() {
-    const { canAccessPermission, user } = this.props;
-    if (!canAccessPermission) {
-      router.push(FORBIDDEN_PAGE_PATH);
-    }
-  }
 
   transformSwitchValue = value => {
     if (value) return "Đóng";

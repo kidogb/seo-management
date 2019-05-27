@@ -26,15 +26,26 @@ import VariationTable from '@/components/VariationTable';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-@connect(({ user, sample }) => ({
+@connect(({ sample }) => ({
   sample,
-  canEditSamplePermission: hasRole(user.currentUser.user_type, ROLES.ADMIN) || hasRole(user.currentUser.user_type, ROLES.MANAGER),
 }))
 @Form.create()
 class SampleDetailForm extends PureComponent {
+  state = {
+    authority: undefined,
+  };
+  canAddEditDeleteSamplePermission = (authority) => {
+    if (!authority) return false;
+    if (authority.includes('Admin')  || authority.includes('Quản lý')) return true;
+    return false;
+  }
   componentDidMount() {
     const { dispatch } = this.props;
     const id = this.props.match.params.id;
+    const authority = localStorage.getItem('antd-pro-authority');
+    this.setState({
+      authority: authority,
+    });
     dispatch({
       type: 'sample/fetchDetail',
       payload: id,
@@ -72,10 +83,6 @@ class SampleDetailForm extends PureComponent {
     });
   }
   render() {
-    const {
-      form: { getFieldDecorator, getFieldValue },
-      canEditSamplePermission,
-    } = this.props;
     const formItemLayout = {
       labelCol: {
         xs: { span: 12 },
@@ -87,18 +94,20 @@ class SampleDetailForm extends PureComponent {
         md: { span: 16 },
       },
     };
-
     const submitFormLayout = {
       wrapperCol: {
         xs: { span: 24, offset: 0 },
         sm: { span: 10, offset: 7 },
       },
     };
+
+    const id = this.props.match.params.id;
     const {
+      form: { getFieldDecorator, getFieldValue },
       sample: { data },
       loading,
     } = this.props;
-    const id = this.props.match.params.id;
+    const { authority } = this.state;
     return (
       <PageHeaderWrapper
         title="Thông tin mẫu"
@@ -150,10 +159,10 @@ class SampleDetailForm extends PureComponent {
             />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <ButtonGroup>
-                {canEditSamplePermission && <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
+                {this.canAddEditDeleteSamplePermission(authority) && <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
                   Xoá mẫu
                 </Button>}
-                {canEditSamplePermission && <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/${id}/edit`)}>
+                {this.canAddEditDeleteSamplePermission(authority) && <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/${id}/edit`)}>
                   Cập nhật
                 </Button>}
                 <Button key="btnBack" style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>

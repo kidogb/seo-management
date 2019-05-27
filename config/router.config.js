@@ -27,17 +27,18 @@ export default [
         path: '/sample',
         name: 'sample',
         icon: 'tag',
-        authority: ['Admin', 'Quản lý', 'Cộng tác viên'],
         routes: [
           {
             path: '/sample/list',
             name: 'list',
             component: './Sample/SampleList',
+            authority: ['Admin', 'Quản lý', 'Cộng tác viên'],
           },
           {
             path: '/sample/:id/detail',
             name: 'detail',
             component: './Sample/SampleDetail',
+            authority: ['Admin', 'Quản lý', 'Cộng tác viên'],
             hideInMenu: true,
           },
           {
@@ -45,7 +46,7 @@ export default [
             name: 'edit',
             component: './Sample/SampleEdit',
             hideInMenu: true,
-            // authority: ['Admin', 'Quản lý'],
+            authority: ['Admin', 'Quản lý'],
           },
           {
             path: '/sample/registration',
@@ -66,28 +67,33 @@ export default [
             path: '/production/list',
             name: 'list',
             component: './Production/List',
+            authority: ['Admin', 'Cộng tác viên'],
           },
           {
             path: '/production/:id/detail',
             name: 'detail',
             component: './Production/Detail',
+            authority: ['Admin', 'Cộng tác viên'],
             hideInMenu: true,
           },
           {
             path: '/production/registration',
             name: 'registration',
             component: './Production/Registration',
+            authority: ['Admin', 'Cộng tác viên'],
           },
           {
             path: '/production/:id/variations/registration',
             name: 'variations-registration',
             component: './VariationsProduction/VariationsRegistration',
+            authority: ['Admin', 'Cộng tác viên'],
             hideInMenu: true,
           },
           {
             path: '/production/:id/variations/list',
             name: 'variations-list',
             component: './VariationsProduction/VariationsList',
+            authority: ['Admin', 'Cộng tác viên'],
             hideInMenu: true,
           },
           {

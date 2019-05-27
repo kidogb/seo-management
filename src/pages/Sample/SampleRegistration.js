@@ -32,15 +32,8 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-@connect(({ user, loading }) => ({
-  user,
+@connect(({ loading }) => ({
   submitting: loading.effects['sample/add'],
-  canAccessPermission: hasRole(
-    user.currentUser.user_type,
-    ROLES.ADMIN)
-    || hasRole(
-      user.currentUser.user_type,
-      ROLES.MANAGER),
 }))
 @Form.create()
 class SampleRegistration extends PureComponent {
@@ -52,17 +45,11 @@ class SampleRegistration extends PureComponent {
     count: 0,
   };
 
-  componentDidMount(){
-    const {canAccessPermission, user} = this.props;
-    if (!canAccessPermission) router.push(FORBIDDEN_PAGE_PATH);
-  }
-
    handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
     if (fileList.length > 9)  fileList = fileList.slice(-9);
     this.setState({ fileList });
-    console.log('AAAA: ', fileList);
   }
 
   handleDelete = key => {
