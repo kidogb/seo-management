@@ -34,6 +34,13 @@ export async function removeProduct(id) {
   });
 }
 
+export async function updateProduct(payload) {
+  return request(`/commonapis/products/${payload.id}/`, {
+    method: 'PUT',
+    body: payload,
+  });
+}
+
 export async function addVariations(payload) {
   return request('/commonapis/variationproducts/', {
     method: 'POST',

@@ -124,7 +124,7 @@ class SampleDetailForm extends PureComponent {
                 readOnly
               />
             </FormItem>
-            <FormItem {...formItemLayout} label="Mô tả mẫu">
+            <FormItem {...formItemLayout} label="Ảnh mẫu">
               {(data && data.id) && <PicturesWall fileList={this.getSampleImgs(data.ps_imgs)} displayUploadButton={false} showRemoveIcon={false}
                 key="upload" />}
             </FormItem>

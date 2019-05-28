@@ -20,36 +20,32 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import ButtonGroup from 'antd/lib/button/button-group';
-import variations from '@/models/variations';
+import { hasRole, ROLES } from '@/common/permission';
+import VariationTable from '@/components/VariationTable';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 12 },
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    xs: { span: 48 },
-    sm: { span: 24 },
-    md: { span: 16 },
-  },
-};
 
-const submitFormLayout = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 10, offset: 7 },
-  },
-};
 @connect(({ product }) => ({
   product,
 }))
 @Form.create()
 class ProductDetailForm extends PureComponent {
+  state = {
+    authority: undefined,
+  };
+  canAddEditDeleteProductPermission = (authority) => {
+    if (!authority) return false;
+    if (authority.includes('Admin')  || authority.includes('Cộng tác viên')) return true;
+    return false;
+  }
   componentDidMount() {
     const { dispatch } = this.props;
     const id = this.props.match.params.id;
+    const authority = localStorage.getItem('antd-pro-authority');
+    this.setState({
+      authority: authority,
+    });
     dispatch({
       type: 'product/fetchDetail',
       payload: id,
@@ -71,7 +67,7 @@ class ProductDetailForm extends PureComponent {
   goBackToListScreen = id => {
     router.push(`/production/list`);
   };
-  handleRemoveProuct = id => {
+  handleRemoveSample = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'product/remove',
@@ -86,62 +82,37 @@ class ProductDetailForm extends PureComponent {
       }
     });
   }
-  renderVariations = (variations) => {
-    return variations.map((variation, i) => (
-      <div key={i + 1}>
-        <FormItem {...formItemLayout} label={`Variations Name ${i + 1}`} >
-          <TextArea
-            key="ps_variation_name"
-            style={{ minHeight: 32 }}
-            placeholder="Variations Name"
-            autosize={{ minRows: 2, maxRows: 6 }}
-            value={variation.ps_variation_name}
-            readOnly
-          />
-        </FormItem>
-        <FormItem {...formItemLayout} label={`Variations Price ${i + 1}`} >
-          <TextArea
-            key="ps_variation_price"
-            style={{ minHeight: 32 }}
-            placeholder="Variations Price"
-            autosize={{ minRows: 2, maxRows: 6 }}
-            value={variation.ps_variation_price}
-            readOnly
-          />
-        </FormItem>
-        <FormItem {...formItemLayout} label={`Variations Stock ${i + 1}`} >
-          <TextArea
-            key="ps_variation_stock"
-            style={{ minHeight: 32 }}
-            placeholder="Variations Stock"
-            autosize={{ minRows: 2, maxRows: 6 }}
-            value={variation.ps_variation_stock}
-            readOnly
-          />
-        </FormItem>
-      </div>
-    ));
-  }
   render() {
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 12 },
+        sm: { span: 4 },
+      },
+      wrapperCol: {
+        xs: { span: 48 },
+        sm: { span: 24 },
+        md: { span: 16 },
+      },
+    };
+    const submitFormLayout = {
+      wrapperCol: {
+        xs: { span: 24, offset: 0 },
+        sm: { span: 10, offset: 7 },
+      },
+    };
+
+    const id = this.props.match.params.id;
     const {
-      form: { getFieldDecorator, getFieldValue }
-    } = this.props;
-    const {
+      form: { getFieldDecorator, getFieldValue },
       product: { data },
       loading,
     } = this.props;
-    const id = this.props.match.params.id;
-    const variations = (data && data.variation_product && data.variation_product.length > 0) ? this.renderVariations(data.variation_product) : null;
+    const { authority } = this.state;
     return (
       <PageHeaderWrapper
         title="Thông tin sản phẩm"
       >
         <Card bordered={false}>
-          <ButtonGroup style={{marginBottom: 10}}>
-            <Button key="btnAddVariation" icon= "plus" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/production/${id}/variations/list`)}>
-              Tạo variations
-              </Button>
-          </ButtonGroup>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="Tên sản phẩm" >
               <TextArea
@@ -153,7 +124,7 @@ class ProductDetailForm extends PureComponent {
                 readOnly
               />
             </FormItem>
-            <FormItem {...formItemLayout} label="Mô tả sản phẩm">
+            <FormItem {...formItemLayout} label="Ảnh sản phẩm">
               {(data && data.id) && <PicturesWall fileList={this.getProductImgs(data.ps_imgs)} displayUploadButton={false} showRemoveIcon={false}
                 key="upload" />}
             </FormItem>
@@ -182,15 +153,21 @@ class ProductDetailForm extends PureComponent {
             <FormItem {...formItemLayout} label="Thời gian ship (ngày)">
               <Input key="ps_days_to_ship" placeholder="Thời gian ship" value={data.ps_days_to_ship} readOnly />
             </FormItem>
-            {variations}
+            <VariationTable
+              dataSource={data.variation_product}
+              editable={false}
+            />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <ButtonGroup>
-                <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveProuct(id)}>
+                {this.canAddEditDeleteProductPermission(authority) && <Button key="btnDelete" type="danger" style={{ marginLeft: 8 }} onClick={() => this.handleRemoveSample(id)}>
                   Xoá sản phẩm
-              </Button>
+                </Button>}
+                {this.canAddEditDeleteProductPermission(authority) && <Button key="btnUpdate" type="primary" style={{ marginLeft: 8 }} onClick={() => router.push(`/production/${id}/edit`)}>
+                  Cập nhật
+                </Button>}
                 <Button key="btnBack" style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>
                   Quay lại
-              </Button>
+                </Button>
               </ButtonGroup>
             </FormItem>
           </Form>

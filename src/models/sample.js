@@ -73,9 +73,9 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
       yield put (
         routerRedux.push(`/sample/${payload.id}/detail`));
+      if (callback) callback();
     },
   },
 

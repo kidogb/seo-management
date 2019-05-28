@@ -1,4 +1,4 @@
-import { queryProduct, queryAllProduct, queryProductDetail, addProduct, removeProduct, addUploadFile } from '@/services/api';
+import { queryProduct, queryAllProduct, queryProductDetail, addProduct, removeProduct, updateProduct, addUploadFile } from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
 export default {
@@ -70,11 +70,13 @@ export default {
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
+      const response = yield call(updateProduct, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      yield put (
+        routerRedux.push(`/production/${payload.id}/detail`));
       if (callback) callback();
     },
   },
