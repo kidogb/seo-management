@@ -28,6 +28,7 @@ export default {
   'menu.production.list': 'Danh sách sản phẩm',
   'menu.production.registration': 'Thêm sản phẩm',
   'menu.production.detail': 'Thông tin',
+  'menu.production.edit': 'Cập nhật sản phẩm',
   'menu.sample': 'Sản phẩm mẫu',
   'menu.sample.list': 'Danh sách sản phẩm mẫu',
   'menu.sample.registration': 'Thêm sản phẩm mẫu',

@@ -17,15 +17,15 @@ import {
   Row,
   Col,
   Upload,
-  Modal,
+  notification,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import { message } from 'antd';
 import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
+import VariationTable from '@/components/VariationTable';
 import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
-
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -39,18 +39,86 @@ const { TextArea } = Input;
 class ProductRegistration extends PureComponent {
   state = {
     fileList: [
-    ],
-    visible: false,
-    id: null,
+    ], 
+    createProductCheck: false,
+    variationList: [],
+    count: 0,
   };
+
+   handleChangeUpload = (info) => {
+    let fileList = info.fileList;
+    // 1. Limit the number of uploaded files
+    if (fileList.length > 9)  fileList = fileList.slice(-9);
+    this.setState({ fileList });
+  }
+
+  handleDelete = key => {
+    const variationList = [...this.state.variationList];
+    this.setState({ variationList: variationList.filter(item => item.key !== key) });
+  };
+
+  handleAdd = () => {
+    const { count, variationList } = this.state;
+    const newData = {
+      key: count,
+      ps_variation_name: `name`,
+      ps_variation_price: 0,
+      ps_variation_stock: 0,
+    };
+    this.setState({
+      variationList: [...variationList, newData],
+      count: count + 1,
+    });
+  };
+
+  // handle save to variationList when user click outside
+  handleSave = row => {
+    const { variationList } = this.state;
+    const newData = [...variationList];
+    const index = newData.findIndex(item => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, {
+      ...item,
+      ...row,
+    });
+    this.setState({ variationList: newData });
+  };
+
+  handleCreateVariation = (product_id) => {
+    const { variationList } = this.state;
+    const {dispatch} = this.props;
+    if (variationList.length > 0) {
+      const payload = variationList.map(variation => {
+        return {... variation, product: product_id}
+      });
+      dispatch({
+        type: 'variations/addMultiVariation',
+        payload: payload,
+        callback: (res) => {
+          if (res.length === payload.length) {
+            notification.success({
+              message: "Thành công!",
+              description: 'Sản phẩm đã được tạo thành công'
+            });
+          } else {
+            notification.error({
+              message: `Lỗi tạo variations!`,
+              description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
+            });
+          }
+        }
+      })
+    }
+  }
 
   transformSwitchValue = value => {
     if (value) return "Đóng";
     else return "Mở";
   }
+
   handleSubmit = e => {
     const { dispatch, form } = this.props;
-    const {fileList, visible} = this.state;
+    const {fileList} = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -68,36 +136,23 @@ class ProductRegistration extends PureComponent {
           type: 'product/add',
           payload: {...values},
           callback: (res) => {
-            if (res && res.id) {
-              this.setState({
-                visible: true,
-                id: res.id,
-              });
+            if(res && res.id) {
+              this.handleCreateVariation(res.id);
             } else {
-              message.error ("Không thêm được sản phẩm");
+              notification.error({
+                message: 'Có lỗi khi tạo product!! Vui lòng tạo lại!',
+                description: ''
+              });
             }
           }
         });
       }
     });
   };
-   handleChangeUpload = (info) => {
-    let fileList = info.fileList;
-    // 1. Limit the number of uploaded files
-    if (fileList.length > 9)  fileList = fileList.slice(-9);
-    this.setState({ fileList });
-  }
-  hideModal = () => {
-    this.setState({
-      visible: false,
-    });
-    message.success('Tạo sản phẩm thành công');
-    router.push(`/production/list`);
-  }
 
   render() {
     const { submitting } = this.props;
-    const {fileList, visible, id} = this.state;
+    const {fileList, createProductCheck, variationList} = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -119,21 +174,12 @@ class ProductRegistration extends PureComponent {
         sm: { span: 10, offset: 7 },
       },
     };
+
     return (
       <PageHeaderWrapper
         title="Thêm sản phẩm"
       >
         <Card bordered={false}>
-        {visible && id && <Modal title="Tạo variations"
-          visible={true}
-          onOk={() => {
-            router.push(`/production/${id}/variations/list`);
-          }}
-          onCancel={this.hideModal}
-          okText="Có"
-          cancelText="Không">
-          <p>Tạo sản phẩm thành công!! Bạn có muốn tạo thêm variations cho sản phẩm này</p>
-        </Modal>}
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
             <FormItem {...formItemLayout} label="Tên sản phẩm">
               {getFieldDecorator('ps_product_name', {
@@ -274,12 +320,19 @@ class ProductRegistration extends PureComponent {
                 </PicturesWall>
               )}
             </Form.Item>
+            <VariationTable
+              dataSource={variationList}
+              handleAdd={this.handleAdd}
+              handleDelete={this.handleDelete}
+              handleSave={this.handleSave}
+              editable={true}
+            />
             <FormItem {...submitFormLayout} style={{ marginTop: 32 }}>
               <Button type="primary" htmlType="submit" loading={submitting}>
-                <FormattedMessage id="form.submit" />
+                Tạo sản phẩm
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/production/list`)}>
-                Cancel
+                Quay lại
               </Button>
             </FormItem>
           </Form>
