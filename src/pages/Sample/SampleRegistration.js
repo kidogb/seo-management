@@ -26,6 +26,7 @@ import router from 'umi/router';
 import PicturesWall from '@/components/Upload';
 import VariationTable from '@/components/VariationTable';
 import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
+import { MAX_FILE_UPLOAD_SAMPLE } from '@/common/constant';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -48,7 +49,7 @@ class SampleRegistration extends PureComponent {
    handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > 9)  fileList = fileList.slice(-9);
+    if (fileList.length > MAX_FILE_UPLOAD_SAMPLE)  fileList = fileList.slice(-1* MAX_FILE_UPLOAD_SAMPLE);
     this.setState({ fileList });
   }
 
@@ -328,7 +329,7 @@ class SampleRegistration extends PureComponent {
                   },
                 ],
               })(
-                <PicturesWall showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={fileList}>
+                <PicturesWall maxFile={MAX_FILE_UPLOAD_SAMPLE} showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={fileList}>
                 </PicturesWall>
               )}
             </Form.Item>

@@ -12,10 +12,10 @@ export default {
   effects: {
     *submit({ payload, callback }, { call, put }) {
       const response = yield call(registerUser, payload);
-      yield put({
-        type: 'registerHandle',
-        payload: response,
-      });
+      // yield put({
+      //   type: 'registerHandle',
+      //   payload: response,
+      // });
       if (callback) callback(response);
     },
   },

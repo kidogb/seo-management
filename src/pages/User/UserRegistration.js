@@ -102,7 +102,7 @@ class UserRegistration extends PureComponent {
     if (value && value.length > 9) {
       return 'ok';
     }
-    if (value && value.length > 5) {
+    if (value && value.length > 7) {
       return 'pass';
     }
     return 'poor';
@@ -165,7 +165,7 @@ class UserRegistration extends PureComponent {
           visible: !!value,
         });
       }
-      if (value.length < 6) {
+      if (value.length < 8) {
         callback('error');
       } else {
         const { form } = this.props;

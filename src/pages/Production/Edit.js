@@ -157,7 +157,7 @@ class ProductEditForm extends PureComponent {
   }
 
   goBackToListScreen = id => {
-    router.push(`/product/list`);
+    router.push(`/production/list`);
   };
 
   handleDelete = key => {

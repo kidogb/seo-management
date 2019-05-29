@@ -22,6 +22,7 @@ import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
 import VariationTable from '@/components/VariationTable';
+import { MAX_FILE_UPLOAD_SAMPLE } from '@/common/constant';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -130,7 +131,7 @@ class SampleEditForm extends PureComponent {
   handleChangeUpload = (info) => {
     let newFileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (newFileList.length > 9) newFileList = newFileList.slice(-9);
+    if (newFileList.length > MAX_FILE_UPLOAD_SAMPLE) newFileList = newFileList.slice(-1 * MAX_FILE_UPLOAD_SAMPLE);
     this.setState({ newFileList });
   }
 
@@ -269,7 +270,8 @@ class SampleEditForm extends PureComponent {
                   showPreviewIcon={true}
                   showRemoveIcon={true}
                   onChange={(info) => this.handleChangeUpload(info)}
-                  fileList={newFileList}>
+                  fileList={newFileList}
+                  maxFile={MAX_FILE_UPLOAD_SAMPLE}>
                 </PicturesWall>
               </div>)
               }
