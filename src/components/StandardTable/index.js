@@ -17,6 +17,7 @@ class StandardTable extends PureComponent {
     super(props);
     const { columns } = props;
     this.state = {
+      totalDataKeys: [],
       selectedRowKeys: [],
       checkedTotal: false,
     };
@@ -38,11 +39,9 @@ class StandardTable extends PureComponent {
 
   handleRowSelectChange = (selectedRowKeys, selectedRows) => {
     const { onSelectRow } = this.props;
-
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
-
     this.setState({ selectedRowKeys });
   };
 
@@ -59,40 +58,66 @@ class StandardTable extends PureComponent {
 
   render() {
     const { selectedRowKeys, checkedTotal } = this.state;
-    const { data = {}, rowKey, dataSource, scroll, totalData, onSelectRow, ...rest } = this.props;
+    const { data = {}, rowKey, dataSource, scroll, totalData, onSelectRow, selectedRows, ...rest } = this.props;
     const { results = [], count, next, previous } = data;
     const pagination = {
       total: count,
       pageSize: 10,
-    }; 
+    };
     const paginationProps = {
       // showSizeChanger: true,
       // showQuickJumper: true,
       ...pagination,
     };
-    
+
     const totalDataKeys = totalData ? dataSource ? dataSourece.map(function (obj) {
       return obj.id;
     }) : totalData.map(function (obj) {
       return obj.id;
     }) : [];
     const rowSelection = {
+      onSelectAll: (selected, selectedRows, changeRows) => {
+        {
+          if (selected) {
+            this.handleRowSelectChange(totalDataKeys, totalData);
+          } else {
+            this.cleanSelectedKeys();
+          }
+        }
+      },
+      onSelect: (record, selected) => {
+        if (!selected) {
+          const keys = selectedRowKeys.filter(key => key !== record.id); // selected key
+          const rows = selectedRows.filter(row => row.id !== record.id); // selected row
+          this.setState({ selectedRowKeys: keys });
+          if (onSelectRow) {
+            onSelectRow(rows);
+          }
+        } else {
+          const newKeys = [...selectedRowKeys, record.id];
+          const newRows = [...selectedRows, record];
+          this.setState({ selectedRowKeys: newKeys });
+          if (onSelectRow) {
+            onSelectRow(newRows);
+          }
+        }
+      },
       selectedRowKeys,
-      onChange: this.handleRowSelectChange,
+      // onChange: this.handleRowSelectChange,
       getCheckboxProps: record => ({
         disabled: record.disabled,
       }),
       hideDefaultSelections: true,
-      selections: [{
-        key: 'all-data',
-        text: 'Chọn tất cả',
-        onSelect: () => {
-          this.handleRowSelectChange(totalDataKeys, totalData);
-          this.setState({
-            checkedTotal: !checkedTotal,
-          })
-        },
-      }],
+      // selections: [{
+      //   key: 'all-data',
+      //   text: 'Chọn tất cả',
+      //   onSelect: () => {
+      //     this.handleRowSelectChange(totalDataKeys, totalData);
+      //     this.setState({
+      //       checkedTotal: !checkedTotal,
+      //     });
+      //   },
+      // }],
     };
     const table = scroll ? (<Table
       rowKey={rowKey || 'key'}
