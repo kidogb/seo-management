@@ -40,6 +40,7 @@ export default class PicturesWall extends React.Component {
           onChange={onChange}
           showUploadList={{ showPreviewIcon, showRemoveIcon }}
           onRemove={onRemove}
+          multiple
         >
         {fileList.length >= maxFile ? null : uploadButton}
         </Upload>

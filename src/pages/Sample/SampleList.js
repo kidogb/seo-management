@@ -29,7 +29,7 @@ import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 import { hasRole, ROLES } from '@/common/permission';
-import {getAuthority} from '@/utils/authority';
+import { getAuthority } from '@/utils/authority';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -73,7 +73,7 @@ class SampleTableList extends PureComponent {
 
   canAddEditSamplePermission = (authority) => {
     if (!authority) return false;
-    if (authority.includes('Admin')  || authority.includes('Quản lý')) return true;
+    if (authority.includes('Admin') || authority.includes('Quản lý')) return true;
     return false;
   }
 
@@ -85,7 +85,7 @@ class SampleTableList extends PureComponent {
       width: 200,
       render: record => {
         return <a href='javascript:;' onClick={() => this.previewSample(record.id)}>{record.ps_product_name}</a>
-       }
+      }
     },
     {
       title: 'Category',
@@ -108,7 +108,7 @@ class SampleTableList extends PureComponent {
             url: ps_img.file,
           });
         });
-        return <PicturesWall fileList={fileList} displayUploadButton={false} showRemoveIcon={false}/>;
+        return <PicturesWall fileList={fileList} displayUploadButton={false} showRemoveIcon={false} />;
       },
     },
     {
@@ -125,7 +125,7 @@ class SampleTableList extends PureComponent {
     },
     {
       title: 'Tồn kho',
-      key: 'product_stock', 
+      key: 'product_stock',
       dataIndex: 'ps_stock',
       width: 20,
     },
@@ -142,27 +142,28 @@ class SampleTableList extends PureComponent {
       width: 400,
       onCell: () => {
         return {
-           style: {
-              whiteSpace: 'nowrap',
-              maxWidth: 400,
-           }
+          style: {
+            whiteSpace: 'nowrap',
+            maxWidth: 400,
+          }
         }
-     },
-     render: (text) => (
+      },
+      render: (text) => (
         <Tooltip title={text}>
-           <div style={{textOverflow: 'ellipsis', overflow: 'hidden'}}>{text}</div>
+          <div style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{text}</div>
         </Tooltip>
-     )
+      )
     },
     {
       title: 'Hành động',
       key: 'product_action',
       fixed: 'right',
       render: (record) => (
-          <Button.Group>
-            <Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} />
-            {this.canAddEditSamplePermission(this.state.authority) && <Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} />}
-          </Button.Group>
+        <Button.Group>
+          <Tooltip placement="topLeft" title='Xem sample'><Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} /></Tooltip>
+          <Tooltip placement="topLeft" title='Tạo sản phẩm từ sample'><Button type="primary" ghost icon="copy" onClick={() => this.previewSample(record.id)} /></Tooltip>
+          {this.canAddEditSamplePermission(this.state.authority) && <Tooltip placement="topLeft" title='Xoá sample'><Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} /></Tooltip>}
+        </Button.Group>
       ),
     },
   ];
@@ -251,8 +252,8 @@ class SampleTableList extends PureComponent {
   };
 
   handleRemoveSample = id => {
-    const {dispatch} = this.props;
-    const {selectedRows} = this.state;
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
     dispatch({
       type: 'sample/remove',
       payload: id,
@@ -323,7 +324,7 @@ class SampleTableList extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Category">
-            {getFieldDecorator('ps_category_list_id')(<Input placeholder="Nhập category" />)}
+              {getFieldDecorator('ps_category_list_id')(<Input placeholder="Nhập category" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -359,25 +360,17 @@ class SampleTableList extends PureComponent {
       sample: { data, totalData },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, authority } = this.state;
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
+    const { selectedRows, modalVisible, authority } = this.state;
     return (
       <PageHeaderWrapper title="Danh sách mẫu">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-             { this.canAddEditSamplePermission(authority) && <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
+              {this.canAddEditSamplePermission(authority) && <Button icon="plus" type="primary" onClick={() => this.handleAddSample()}>
                 Thêm mẫu
               </Button>}
-              {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport= {false} excelData={selectedRows} sheetName='Sample' filename='export_sample'/>}
+              {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport={false} excelData={selectedRows} sheetName='Sample' filename='export_sample' />}
             </div>
             <StandardTable
               scroll

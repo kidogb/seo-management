@@ -115,7 +115,7 @@ class ProductTableList extends PureComponent {
       width: 10,
     },
     {
-      title: 'Mô tả sản phẩm',
+      title: 'Mô tả',
       key: 'product_description',
       dataIndex: 'ps_product_description',
       width: 400,
@@ -141,7 +141,6 @@ class ProductTableList extends PureComponent {
       render: (record) => (
         <Button.Group>
           <Tooltip placement="topLeft" title='Xem sản phẩm'><Button type="primary" ghost icon="eye" onClick={() => this.previewProduct(record.id)} /></Tooltip>
-          <Tooltip placement="topLeft" title='Thêm variations'><Button type="primary" icon="plus" ghost onClick={() => router.push(`/production/${record.id}/variations/list`)}></Button></Tooltip>
           <Tooltip placement="topLeft" title='Xoá sản phẩm'><Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveProduct(record.id)} /></Tooltip>
         </Button.Group>
       ),
