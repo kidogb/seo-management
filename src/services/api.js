@@ -1,5 +1,6 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
+import request_without_redirect from '@/utils/request_without_redirect';
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -106,7 +107,7 @@ export async function addUploadFile(params) {
   formData.append("file", params.file);
   formData.append("title", params.title);
   formData.append("note", params.note);
-  return request('/commonapis/fileuploads/', {
+  return request_without_redirect('/commonapis/fileuploads/', {
     method: 'POST',
     body: formData,
   });
