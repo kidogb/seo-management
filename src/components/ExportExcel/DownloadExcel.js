@@ -1,6 +1,7 @@
 import React from "react";
 import ReactExport from "react-data-export";
 import {Button} from 'antd';
+import { MAX_FILE_UPLOAD_PRODUCT, MAX_FILE_UPLOAD_SAMPLE } from "@/common/constant";
 
 
 // const seconds = new Date().getTime();
@@ -33,6 +34,16 @@ class DownloadExcel extends React.Component {
             );
         }
         return variation_column;
+    }
+
+    generateImageColumn = (maxColumn) => {
+        let ps_imgs_column = [];
+        for (let i = 1; i <=maxColumn; i++) {
+            ps_imgs_column.push(
+            <ExcelColumn key = {`ps_img_${i}`} label={`ps_img_${i}`}  value={`ps_img_${i}`}/>,
+            );
+        }
+        return ps_imgs_column;
     }
     
     render() {
@@ -83,15 +94,7 @@ class DownloadExcel extends React.Component {
                     <ExcelColumn label="Channel_50015_switch"  value="channel_50015_switch"/>
                     <ExcelColumn label="Channel_50010_switch"  value="channel_50010_switch"/>
                     {this.generateVariationProductColumn(maxNumberVariation)}        
-                    <ExcelColumn label="ps_img_1" value="ps_img_1" />
-                    <ExcelColumn label="ps_img_2" value="ps_img_2" />
-                    <ExcelColumn label="ps_img_3" value="ps_img_3" />
-                    <ExcelColumn label="ps_img_4" value="ps_img_4" />
-                    <ExcelColumn label="ps_img_5" value="ps_img_5" />
-                    <ExcelColumn label="ps_img_6" value="ps_img_6" />
-                    <ExcelColumn label="ps_img_7" value="ps_img_7" />
-                    <ExcelColumn label="ps_img_8" value="ps_img_8" />
-                    <ExcelColumn label="ps_img_9" value="ps_img_9" />
+                    {this.generateImageColumn(MAX_FILE_UPLOAD_PRODUCT)}
                 </ExcelSheet>
             </ExcelFile>)
             : 
@@ -110,15 +113,7 @@ class DownloadExcel extends React.Component {
                 <ExcelColumn label="Channel_50015_switch"  value="channel_50015_switch"/>
                 <ExcelColumn label="Channel_50010_switch"  value="channel_50010_switch"/> 
                 {this.generateVariationSampleColumn(maxNumberVariation)}  
-                <ExcelColumn label="ps_img_1" value="ps_img_1" />
-                <ExcelColumn label="ps_img_2" value="ps_img_2" />
-                <ExcelColumn label="ps_img_3" value="ps_img_3" />
-                <ExcelColumn label="ps_img_4" value="ps_img_4" />
-                <ExcelColumn label="ps_img_5" value="ps_img_5" />
-                <ExcelColumn label="ps_img_6" value="ps_img_6" />
-                <ExcelColumn label="ps_img_7" value="ps_img_7" />
-                <ExcelColumn label="ps_img_8" value="ps_img_8" />
-                <ExcelColumn label="ps_img_9" value="ps_img_9" />
+                {this.generateImageColumn(MAX_FILE_UPLOAD_SAMPLE)}
             </ExcelSheet>
         </ExcelFile>)
         );

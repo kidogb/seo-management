@@ -22,12 +22,13 @@ import styles from './style.less';
 import PicturesWall from '@/components/Upload';
 import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
 import VariationTable from '@/components/VariationTable';
+import { MAX_FILE_UPLOAD_PRODUCT } from '@/common/constant';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
 @connect(({ loading, product, fileUpload }) => ({
-  submitting: loading.effects['product/update'],
+  submitting: loading.effects['fileUpload/addMultiFile'],
   listFileId: fileUpload.listFileId,
   product,
 }))
@@ -128,9 +129,12 @@ class ProductEditForm extends PureComponent {
   }
 
   handleChangeUpload = (info) => {
+    const { fileList } = this.state;
     let newFileList = info.fileList;
+    const limit = MAX_FILE_UPLOAD_PRODUCT - fileList.length;
     // 1. Limit the number of uploaded files
-    if (newFileList.length > 9) newFileList = newFileList.slice(-9);
+    if (limit === 0) newFileList = [];
+    else if (newFileList.length > limit) newFileList = newFileList.slice(-1 * limit);
     this.setState({ newFileList });
   }
 
@@ -227,7 +231,6 @@ class ProductEditForm extends PureComponent {
     };
     const {
       product: { data },
-      loading,
     } = this.props;
     const id = this.props.match.params.id;
     const { fileList, newFileList, variationList } = this.state;
@@ -269,7 +272,9 @@ class ProductEditForm extends PureComponent {
                   showPreviewIcon={true}
                   showRemoveIcon={true}
                   onChange={(info) => this.handleChangeUpload(info)}
-                  fileList={newFileList}>
+                  fileList={newFileList}
+                  maxFile={fileList ? MAX_FILE_UPLOAD_PRODUCT - fileList.length : 0}
+                  displayUploadButton={MAX_FILE_UPLOAD_PRODUCT - fileList.length === 0 ? false : true} >
                 </PicturesWall>
               </div>)
               }

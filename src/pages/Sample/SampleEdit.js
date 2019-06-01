@@ -28,7 +28,7 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 
 @connect(({ loading, sample, fileUpload }) => ({
-  submitting: loading.effects['sample/update'],
+  submitting: loading.effects['fileUpload/addMultiFile'],
   listFileId: fileUpload.listFileId,
   sample,
 }))
@@ -58,7 +58,7 @@ class SampleEditForm extends PureComponent {
             numberOldVariation: res.variation_sample.length,
           });
       }
-      });
+    });
   }
 
   handleSubmit = e => {
@@ -68,7 +68,7 @@ class SampleEditForm extends PureComponent {
     const { fileList, newFileList, variationList, numberOldVariation } = this.state;
     let ps_imgs = [];
 
-    let oldVariationList =[];
+    let oldVariationList = [];
     let newVariationList = [];
     variationList.filter(variation => {
       if (variation.id) {
@@ -130,8 +130,11 @@ class SampleEditForm extends PureComponent {
 
   handleChangeUpload = (info) => {
     let newFileList = info.fileList;
+    const { fileList } = this.state;
+    const limit = MAX_FILE_UPLOAD_SAMPLE - fileList.length;
     // 1. Limit the number of uploaded files
-    if (newFileList.length > MAX_FILE_UPLOAD_SAMPLE) newFileList = newFileList.slice(-1 * MAX_FILE_UPLOAD_SAMPLE);
+    if (limit === 0) newFileList = [];
+    else if (newFileList.length > limit) newFileList = newFileList.slice(-1 * limit);
     this.setState({ newFileList });
   }
 
@@ -271,7 +274,8 @@ class SampleEditForm extends PureComponent {
                   showRemoveIcon={true}
                   onChange={(info) => this.handleChangeUpload(info)}
                   fileList={newFileList}
-                  maxFile={MAX_FILE_UPLOAD_SAMPLE}>
+                  maxFile={fileList ? MAX_FILE_UPLOAD_SAMPLE - fileList.length : 0}
+                  sdisplayUploadButton={MAX_FILE_UPLOAD_SAMPLE - fileList.length === 0 ? false : true} >
                 </PicturesWall>
               </div>)
               }

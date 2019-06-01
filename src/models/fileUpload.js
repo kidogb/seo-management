@@ -1,6 +1,6 @@
 import { getUploadFile, getAllUploadFile, addUploadFile} from '@/services/api';
 import {routerRedux} from 'dva/router';
-import { message } from 'antd';
+import { message, notification } from 'antd';
 export default {
   namespace: 'fileUpload',
 
@@ -63,10 +63,11 @@ export default {
       //   payload: ps_imgs,
       // });
       // if (callback) callback(ps_imgs); 
-      for (let i = 0; i < fileList.length; i = i + 2) {
+      try {
+      for (let i = 0; i < payload.length; i = i + 2) {
         let arr = [];
-        if (i + 1 < fileList.length) {
-          arr.push(fileList[i], fileList[i + 1]);
+        if (i + 1 < payload.length) {
+          arr.push(payload[i], payload[i + 1]);
           const uploadResList = yield arr.map(file => {
             return call(addUploadFile, {
               title: file.name,
@@ -79,26 +80,29 @@ export default {
           });
         } else {
           const uploadRes = yield call(addUploadFile, {
-            title: fileList[i].name,
-            note: fileList[i].name,
-            file: fileList[i].originFileObj,
+            title: payload[i].name,
+            note: payload[i].name,
+            file: payload[i].originFileObj,
           });
           if (uploadRes.id) ps_imgs.push(uploadRes.id);
         }
       }
-      if (ps_imgs.length === 0) {
+      if (ps_imgs.length === 0 && payload.length !== 0) {
         notification.error({
           message: "Lỗi upload ảnh!",
           description: "Có lỗi trong quá trình upload ảnh. Vui lòng thử lại!"
         });
-      } else if (ps_imgs.length < fileList.length) {
+      } else if (ps_imgs.length < payload.length) {
         notification.error({
           message: "Lỗi upload ảnh!",
           description: "Có lỗi trong quá trình upload ảnh. Một số ảnh có thể không được upload thành công!"
         });
       }
         if (callback) callback(ps_imgs);
+    } catch (error) {
+      console.log(error);
     }
+  },
     // *remove({ payload, callback }, { call, put }) {
     //   const response = yield call(removeRule, payload);
     //   yield put({
