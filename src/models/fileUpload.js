@@ -75,6 +75,7 @@ export default {
               file: file.originFileObj,
             });
           });
+          console.log('AA: ', uploadResList);
           yield uploadResList.map(uploadRes => {
             if (uploadRes.id) ps_imgs.push(uploadRes.id);
           });
