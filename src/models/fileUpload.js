@@ -48,47 +48,13 @@ export default {
     },
     *addMultiFile ({payload, callback}, {call, put}) {
       let ps_imgs = [];
-      const length = payload.length;
-      let i = 0;
-      // if (length <= 2){
-      //   yield payload.map(file =>{
-      //     return call(addUploadFile, {
-      //       title: file.name,
-      //       note: file.name,
-      //       file: file.originFileObj,
-      //     });
-      //   });
-      // } else {
-      //   while (i < length -2){
-      //     const arr = payload.slice (i, i+2);
-      //     i++;
-      //   }
-      // }
-      const num = Math.floor(length/2);
-      const e = length%2;
-      let uploadResList = [];
-      for (let i = 0; i < num; i++) {
-        const arr = payload.slice(2*i, 2*i +1);
-        const resList = yield array.map(file =>{
-          return call(addUploadFile, {
-            title: file.name,
-            note: file.name,
-            file: file.originFileObj,
-          });
+      const uploadResList = yield payload.map(file =>{
+        return call(addUploadFile, {
+          title: file.name,
+          note: file.name,
+          file: file.originFileObj,
         });
-        uploadResList.push(...resList);
-      }
-      if (e === 1){
-        const lastArr = payload.slice(length-1, length);
-        const lastResList = yield lastArr.map(file =>{
-          return call(addUploadFile, {
-            title: file.name,
-            note: file.name,
-            file: file.originFileObj,
-          });
-        });
-        uploadResList.push(...lastResList);
-      }
+      });
       yield uploadResList.map(uploadRes => {
         if(uploadRes.id) ps_imgs.push(uploadRes.id);
       });
