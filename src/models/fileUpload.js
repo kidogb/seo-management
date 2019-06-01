@@ -48,21 +48,56 @@ export default {
     },
     *addMultiFile ({payload, callback}, {call, put}) {
       let ps_imgs = [];
-      const uploadResList = yield payload.map(file =>{
-        return call(addUploadFile, {
-          title: file.name,
-          note: file.name,
-          file: file.originFileObj,
+      // const uploadResList = yield payload.map(file =>{
+      //   return call(addUploadFile, {
+      //     title: file.name,
+      //     note: file.name,
+      //     file: file.originFileObj,
+      //   });
+      // });
+      // yield uploadResList.map(uploadRes => {
+      //   if(uploadRes.id) ps_imgs.push(uploadRes.id);
+      // });
+      // yield put({
+      //   type: 'saveMultiFile',
+      //   payload: ps_imgs,
+      // });
+      // if (callback) callback(ps_imgs); 
+      for (let i = 0; i < fileList.length; i = i + 2) {
+        let arr = [];
+        if (i + 1 < fileList.length) {
+          arr.push(fileList[i], fileList[i + 1]);
+          const uploadResList = yield arr.map(file => {
+            return call(addUploadFile, {
+              title: file.name,
+              note: file.name,
+              file: file.originFileObj,
+            });
+          });
+          yield uploadResList.map(uploadRes => {
+            if (uploadRes.id) ps_imgs.push(uploadRes.id);
+          });
+        } else {
+          const uploadRes = yield call(addUploadFile, {
+            title: fileList[i].name,
+            note: fileList[i].name,
+            file: fileList[i].originFileObj,
+          });
+          if (uploadRes.id) ps_imgs.push(uploadRes.id);
+        }
+      }
+      if (ps_imgs.length === 0) {
+        notification.error({
+          message: "Lỗi upload ảnh!",
+          description: "Có lỗi trong quá trình upload ảnh. Vui lòng thử lại!"
         });
-      });
-      yield uploadResList.map(uploadRes => {
-        if(uploadRes.id) ps_imgs.push(uploadRes.id);
-      });
-      yield put({
-        type: 'saveMultiFile',
-        payload: ps_imgs,
-      });
-      if (callback) callback(ps_imgs); 
+      } else if (ps_imgs.length < fileList.length) {
+        notification.error({
+          message: "Lỗi upload ảnh!",
+          description: "Có lỗi trong quá trình upload ảnh. Một số ảnh có thể không được upload thành công!"
+        });
+      }
+        if (callback) callback(ps_imgs);
     }
     // *remove({ payload, callback }, { call, put }) {
     //   const response = yield call(removeRule, payload);

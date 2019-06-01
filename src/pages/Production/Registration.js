@@ -100,6 +100,7 @@ class ProductRegistration extends PureComponent {
               message: "Thành công!",
               description: 'Sản phẩm đã được tạo thành công'
             });
+          router.push('/production/list');
           } else {
             notification.error({
               message: `Lỗi tạo variations!`,

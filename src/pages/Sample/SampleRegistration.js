@@ -40,16 +40,16 @@ const { TextArea } = Input;
 class SampleRegistration extends PureComponent {
   state = {
     fileList: [
-    ], 
+    ],
     createProductCheck: false,
     variationList: [],
     count: 0,
   };
 
-   handleChangeUpload = (info) => {
+  handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > MAX_FILE_UPLOAD_SAMPLE)  fileList = fileList.slice(-1* MAX_FILE_UPLOAD_SAMPLE);
+    if (fileList.length > MAX_FILE_UPLOAD_SAMPLE) fileList = fileList.slice(-1 * MAX_FILE_UPLOAD_SAMPLE);
     this.setState({ fileList });
   }
 
@@ -87,10 +87,10 @@ class SampleRegistration extends PureComponent {
 
   handleCreateVariation = (sample_id) => {
     const { variationList } = this.state;
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     if (variationList.length > 0) {
       const payload = variationList.map(variation => {
-        return {... variation, sample: sample_id}
+        return { ...variation, sample: sample_id }
       });
       dispatch({
         type: 'variations/addMultiVariation',
@@ -101,6 +101,7 @@ class SampleRegistration extends PureComponent {
               message: "Thành công!",
               description: 'Sample đã được tạo thành công'
             });
+            router.push(`/sample/list`);
           } else {
             notification.error({
               message: `Lỗi tạo variations!`,
@@ -119,7 +120,7 @@ class SampleRegistration extends PureComponent {
 
   handleSubmit = e => {
     const { dispatch, form } = this.props;
-    const {fileList} = this.state;
+    const { fileList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -136,14 +137,14 @@ class SampleRegistration extends PureComponent {
         if (values.ps_add_new_product_from_sample_checkbox) {
           dispatch({
             type: 'product/add',
-            payload: {...values},
+            payload: { ...values },
           });
         }
         dispatch({
           type: 'sample/add',
-          payload: {...values},
+          payload: { ...values },
           callback: (res) => {
-            if(res && res.id) {
+            if (res && res.id) {
               this.handleCreateVariation(res.id);
             } else {
               notification.error({
@@ -159,7 +160,7 @@ class SampleRegistration extends PureComponent {
 
   render() {
     const { submitting } = this.props;
-    const {fileList, createProductCheck, variationList} = this.state;
+    const { fileList, createProductCheck, variationList } = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -224,7 +225,7 @@ class SampleRegistration extends PureComponent {
                 ],
               })(
                 <TextArea
-                  style={{ minHeight: 32 , minWidth: 32}}
+                  style={{ minHeight: 32, minWidth: 32 }}
                   placeholder="Nhập thông tin mẫu"
                   rows={4}
                 />
@@ -240,7 +241,7 @@ class SampleRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập giá mẫu (VND)"
                   formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\$\s?|(,*)/g, '')}
@@ -257,7 +258,7 @@ class SampleRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập khối lượng mẫu (g)"
                   formatter={value => `g ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\g\s?|(,*)/g, '')}
@@ -274,7 +275,7 @@ class SampleRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập số lượng mẫu"
                 />
               )}
@@ -289,7 +290,7 @@ class SampleRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập thời gian ship"
                 />
               )}
@@ -320,7 +321,7 @@ class SampleRegistration extends PureComponent {
               )}
             </Form.Item>
             <Form.Item {...formItemLayout} label="Upload ảnh">
-              {getFieldDecorator('upload',{
+              {getFieldDecorator('upload', {
                 initialValue: [],
                 rules: [
                   {
@@ -329,7 +330,7 @@ class SampleRegistration extends PureComponent {
                   },
                 ],
               })(
-                <PicturesWall maxFile={MAX_FILE_UPLOAD_SAMPLE} showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={fileList}>
+                <PicturesWall maxFile={MAX_FILE_UPLOAD_SAMPLE} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={fileList}>
                 </PicturesWall>
               )}
             </Form.Item>
@@ -344,7 +345,7 @@ class SampleRegistration extends PureComponent {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 Tạo mẫu
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/sample/list`)}>
+              <Button style={{ marginLeft: 8 }} onClick={() => router.push(`/sample/list`)}>
                 Quay lại
               </Button>
             </FormItem>

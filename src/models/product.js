@@ -42,26 +42,53 @@ export default {
     *add({ payload, callback }, { call, put }) {
       const fileList = payload.upload.fileList;
       let ps_imgs = [];
-      const uploadResList = yield fileList.map(file =>{
-        return call(addUploadFile, {
-          title: file.name,
-          note: file.name,
-          file: file.originFileObj,
+      for (let i = 0; i < fileList.length; i = i + 2) {
+        let arr = [];
+        if (i + 1 < fileList.length) {
+          arr.push(fileList[i], fileList[i + 1]);
+          const uploadResList = yield arr.map(file => {
+            return call(addUploadFile, {
+              title: file.name,
+              note: file.name,
+              file: file.originFileObj,
+            });
+          });
+          yield uploadResList.map(uploadRes => {
+            if (uploadRes.id) ps_imgs.push(uploadRes.id);
+          });
+        } else {
+          const uploadRes = yield call(addUploadFile, {
+            title: fileList[i].name,
+            note: fileList[i].name,
+            file: fileList[i].originFileObj,
+          });
+          if (uploadRes.id) ps_imgs.push(uploadRes.id);
+        }
+      }
+      if (ps_imgs.length === 0) {
+        notification.error({
+          message: "Lỗi upload ảnh!",
+          description: "Có lỗi trong quá trình upload ảnh. Vui lòng thử lại!"
         });
-      });
-      yield uploadResList.map(uploadRes => {
-        if(uploadRes.id) ps_imgs.push(uploadRes.id);
-      });
-      const response = yield call(addProduct, {... payload, ps_imgs});
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      yield put (
-        routerRedux.push(`/production/list`));
-      if (callback) callback(response);
-      // else yield put (
-      //   routerRedux.push(`/production/list`));
+      } else if (ps_imgs.length < fileList.length) {
+        notification.error({
+          message: "Lỗi upload ảnh!",
+          description: "Có lỗi trong quá trình upload ảnh. Một số ảnh có thể không được upload thành công!"
+        });
+        const response = yield call(addProduct, { ...payload, ps_imgs });
+        yield put({
+          type: 'save',
+          payload: response,
+        });
+        if (callback) callback(response);
+      } else if (ps_imgs.length === fileList.length) {
+        const response = yield call(addProduct, { ...payload, ps_imgs });
+        yield put({
+          type: 'save',
+          payload: response,
+        });
+        if (callback) callback(response);
+      }
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeProduct, payload);
