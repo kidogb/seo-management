@@ -1,6 +1,7 @@
 import { queryProduct, queryAllProduct, queryProductDetail, addProduct, removeProduct, updateProduct, addUploadFile } from '@/services/api';
 import {routerRedux} from 'dva/router';
 import { message } from 'antd';
+import { MAX_FILE_UPLOAD_CONCURRENT } from '@/common/constant';
 export default {
   namespace: 'product',
 
@@ -40,30 +41,36 @@ export default {
       if (callback) callback(response);
     },
     *add({ payload, callback }, { call, put }) {
+      try {
       const fileList = payload.upload.fileList;
       let ps_imgs = [];
-      for (let i = 0; i < fileList.length; i = i + 2) {
-        let arr = [];
-        if (i + 1 < fileList.length) {
-          arr.push(fileList[i], fileList[i + 1]);
-          const uploadResList = yield arr.map(file => {
-            return call(addUploadFile, {
-              title: file.name,
-              note: file.name,
-              file: file.originFileObj,
-            });
+      for (let i = 0; i <= fileList.length - MAX_FILE_UPLOAD_CONCURRENT; i = i + MAX_FILE_UPLOAD_CONCURRENT) {
+        const arr = fileList.slice(i, i + MAX_FILE_UPLOAD_CONCURRENT);
+        const uploadResList = yield arr.map(file => {
+          return call(addUploadFile, {
+            title: file.name,
+            note: file.name,
+            file: file.originFileObj,
           });
-          yield uploadResList.map(uploadRes => {
-            if (uploadRes.id) ps_imgs.push(uploadRes.id);
+        });
+        console.log(uploadResList);
+        yield uploadResList.map(uploadRes => {
+          if (uploadResList && uploadRes.id) ps_imgs.push(uploadRes.id);
+        });
+      }
+      if (fileList.length % MAX_FILE_UPLOAD_CONCURRENT !== 0) {
+        const lastArr = fileList.slice(MAX_FILE_UPLOAD_CONCURRENT * Math.floor(fileList.length / MAX_FILE_UPLOAD_CONCURRENT), fileList.length);
+        const lastUploadResList = yield lastArr.map(file => {
+          return call(addUploadFile, {
+            title: file.name,
+            note: file.name,
+            file: file.originFileObj,
           });
-        } else {
-          const uploadRes = yield call(addUploadFile, {
-            title: fileList[i].name,
-            note: fileList[i].name,
-            file: fileList[i].originFileObj,
-          });
-          if (uploadRes.id) ps_imgs.push(uploadRes.id);
-        }
+        });
+        console.log(lastUploadResList);
+        yield lastUploadResList.map(lastUploadRes => {
+          if (lastUploadRes && lastUploadRes.id) ps_imgs.push(lastUploadRes.id);
+        });
       }
       if (ps_imgs.length === 0) {
         notification.error({
@@ -88,6 +95,11 @@ export default {
           payload: response,
         });
         if (callback) callback(response);
+      }} catch (error){
+        notification.error({
+          message: "Lỗi tạo sample!",
+          description: { error }
+        });
       }
     },
     *remove({ payload, callback }, { call, put }) {
