@@ -111,6 +111,7 @@ export default {
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
+      if (payload && payload.upload) payload.upload = [];
       const response = yield call(updateProduct, payload);
       yield put({
         type: 'save',
