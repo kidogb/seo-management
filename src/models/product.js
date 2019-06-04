@@ -43,8 +43,9 @@ export default {
     *add({ payload, callback }, { call, put }) {
       try {
       const fileList = payload.upload.fileList;
+      const length = fileList.length;
       let ps_imgs = [];
-      for (let i = 0; i <= fileList.length - MAX_FILE_UPLOAD_CONCURRENT; i = i + MAX_FILE_UPLOAD_CONCURRENT) {
+      for (let i = 0; i <= length - MAX_FILE_UPLOAD_CONCURRENT; i = i + MAX_FILE_UPLOAD_CONCURRENT) {
         const arr = fileList.slice(i, i + MAX_FILE_UPLOAD_CONCURRENT);
         const uploadResList = yield arr.map(file => {
           return call(addUploadFile, {
@@ -53,13 +54,12 @@ export default {
             file: file.originFileObj,
           });
         });
-        console.log(uploadResList);
         yield uploadResList.map(uploadRes => {
           if (uploadResList && uploadRes.id) ps_imgs.push(uploadRes.id);
         });
       }
-      if (fileList.length % MAX_FILE_UPLOAD_CONCURRENT !== 0) {
-        const lastArr = fileList.slice(MAX_FILE_UPLOAD_CONCURRENT * Math.floor(fileList.length / MAX_FILE_UPLOAD_CONCURRENT), fileList.length);
+      if (length % MAX_FILE_UPLOAD_CONCURRENT !== 0) {
+        const lastArr = fileList.slice(MAX_FILE_UPLOAD_CONCURRENT * Math.floor(length / MAX_FILE_UPLOAD_CONCURRENT), length);
         const lastUploadResList = yield lastArr.map(file => {
           return call(addUploadFile, {
             title: file.name,
@@ -67,17 +67,17 @@ export default {
             file: file.originFileObj,
           });
         });
-        console.log(lastUploadResList);
         yield lastUploadResList.map(lastUploadRes => {
           if (lastUploadRes && lastUploadRes.id) ps_imgs.push(lastUploadRes.id);
         });
       }
+      payload.upload = []; //reset upload, avoid large size of request
       if (ps_imgs.length === 0) {
         notification.error({
           message: "Lỗi upload ảnh!",
           description: "Có lỗi trong quá trình upload ảnh. Vui lòng thử lại!"
         });
-      } else if (ps_imgs.length < fileList.length) {
+      } else if (ps_imgs.length < length) {
         notification.error({
           message: "Lỗi upload ảnh!",
           description: "Có lỗi trong quá trình upload ảnh. Một số ảnh có thể không được upload thành công!"
@@ -88,7 +88,7 @@ export default {
           payload: response,
         });
         if (callback) callback(response);
-      } else if (ps_imgs.length === fileList.length) {
+      } else if (ps_imgs.length === length) {
         const response = yield call(addProduct, { ...payload, ps_imgs });
         yield put({
           type: 'save',
