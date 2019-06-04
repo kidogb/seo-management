@@ -88,29 +88,27 @@ class SampleRegistration extends PureComponent {
   handleCreateVariation = (sample_id) => {
     const { variationList } = this.state;
     const { dispatch } = this.props;
-    if (variationList.length > 0) {
-      const payload = variationList.map(variation => {
-        return { ...variation, sample: sample_id }
-      });
-      dispatch({
-        type: 'variations/addMultiVariation',
-        payload: payload,
-        callback: (res) => {
-          if (res.length === payload.length) {
-            notification.success({
-              message: "Thành công!",
-              description: 'Sample đã được tạo thành công'
-            });
-            router.push(`/sample/list`);
-          } else {
-            notification.error({
-              message: `Lỗi tạo variations!`,
-              description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
-            });
-          }
+    const payload = variationList.map(variation => {
+      return { ...variation, sample: sample_id }
+    });
+    dispatch({
+      type: 'variations/addMultiVariation',
+      payload: payload,
+      callback: (res) => {
+        if (res.length === payload.length) {
+          notification.success({
+            message: "Thành công!",
+            description: 'Sample đã được tạo thành công!'
+          });
+          router.push(`/sample/list`);
+        } else {
+          notification.error({
+            message: `Lỗi tạo variations!`,
+            description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
+          });
         }
-      })
-    }
+      }
+    });
   }
 
   transformSwitchValue = value => {
@@ -120,7 +118,7 @@ class SampleRegistration extends PureComponent {
 
   handleSubmit = e => {
     const { dispatch, form } = this.props;
-    const { fileList } = this.state;
+    const { fileList, variationList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -145,7 +143,15 @@ class SampleRegistration extends PureComponent {
           payload: { ...values },
           callback: (res) => {
             if (res && res.id) {
-              this.handleCreateVariation(res.id);
+              if (variationList && variationList.length > 0) {
+                this.handleCreateVariation(res.id);
+              } else {
+                notification.success({
+                  message: "Thành công!",
+                  description: 'Sample đã được tạo thành công!'
+                });
+                router.push(`/sample/list`);
+              }
             } else {
               notification.error({
                 message: 'Có lỗi khi tạo sample!! Vui lòng tạo lại!',

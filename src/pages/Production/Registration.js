@@ -40,16 +40,16 @@ const { TextArea } = Input;
 class ProductRegistration extends PureComponent {
   state = {
     fileList: [
-    ], 
+    ],
     createProductCheck: false,
     variationList: [],
     count: 0,
   };
 
-   handleChangeUpload = (info) => {
+  handleChangeUpload = (info) => {
     let fileList = info.fileList;
     // 1. Limit the number of uploaded files
-    if (fileList.length > MAX_FILE_UPLOAD_PRODUCT)  fileList = fileList.slice(-1 * MAX_FILE_UPLOAD_PRODUCT);
+    if (fileList.length > MAX_FILE_UPLOAD_PRODUCT) fileList = fileList.slice(-1 * MAX_FILE_UPLOAD_PRODUCT);
     this.setState({ fileList });
   }
 
@@ -87,30 +87,28 @@ class ProductRegistration extends PureComponent {
 
   handleCreateVariation = (product_id) => {
     const { variationList } = this.state;
-    const {dispatch} = this.props;
-    if (variationList.length > 0) {
-      const payload = variationList.map(variation => {
-        return {... variation, product: product_id}
-      });
-      dispatch({
-        type: 'variations/addMultiVariation',
-        payload: payload,
-        callback: (res) => {
-          if (res.length === payload.length) {
-            notification.success({
-              message: "Thành công!",
-              description: 'Sản phẩm đã được tạo thành công'
-            });
+    const { dispatch } = this.props;
+    const payload = variationList.map(variation => {
+      return { ...variation, product: product_id }
+    });
+    dispatch({
+      type: 'variations/addMultiVariation',
+      payload: payload,
+      callback: (res) => {
+        if (res.length === payload.length) {
+          notification.success({
+            message: "Thành công!",
+            description: 'Sản phẩm đã được tạo thành công!'
+          });
           router.push('/production/list');
-          } else {
-            notification.error({
-              message: `Lỗi tạo variations!`,
-              description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
-            });
-          }
+        } else {
+          notification.error({
+            message: `Lỗi tạo variations!`,
+            description: 'Variation có thể chưa được tạo hoặc tạo không đầy đủ! Vui lòng kiểm tra lại!',
+          });
         }
-      })
-    }
+      }
+    });
   }
 
   transformSwitchValue = value => {
@@ -120,7 +118,7 @@ class ProductRegistration extends PureComponent {
 
   handleSubmit = e => {
     const { dispatch, form } = this.props;
-    const {fileList} = this.state;
+    const { fileList, variationList } = this.state;
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -136,10 +134,18 @@ class ProductRegistration extends PureComponent {
         else values.channel_50010_switch = "Đóng";
         dispatch({
           type: 'product/add',
-          payload: {...values},
+          payload: { ...values },
           callback: (res) => {
-            if(res && res.id) {
-              this.handleCreateVariation(res.id);
+            if (res && res.id) {
+              if (variationList && variationList.length > 0) {
+                this.handleCreateVariation(res.id);
+              } else {
+                notification.success({
+                  message: "Thành công!",
+                  description: 'Sản phẩm đã được tạo thành công!'
+                });
+                router.push('/production/list');
+              }
             } else {
               notification.error({
                 message: 'Có lỗi khi tạo product!! Vui lòng tạo lại!',
@@ -154,7 +160,7 @@ class ProductRegistration extends PureComponent {
 
   render() {
     const { submitting } = this.props;
-    const {fileList, createProductCheck, variationList} = this.state;
+    const { fileList, createProductCheck, variationList } = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -213,7 +219,7 @@ class ProductRegistration extends PureComponent {
                 ],
               })(
                 <TextArea
-                  style={{ minHeight: 32 , minWidth: 32}}
+                  style={{ minHeight: 32, minWidth: 32 }}
                   placeholder="Nhập thông tin sản phẩm"
                   rows={4}
                 />
@@ -229,7 +235,7 @@ class ProductRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập giá sản phẩm (VND)"
                   formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\$\s?|(,*)/g, '')}
@@ -246,7 +252,7 @@ class ProductRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập khối lượng sản phẩm (g)"
                   formatter={value => `g ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={value => value.replace(/\g\s?|(,*)/g, '')}
@@ -263,7 +269,7 @@ class ProductRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập số lượng sản phẩm"
                 />
               )}
@@ -278,7 +284,7 @@ class ProductRegistration extends PureComponent {
                 ],
               })(
                 <InputNumber
-                  style={{ minHeight: 32,width: '100%' }}
+                  style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập thời gian ship"
                 />
               )}
@@ -309,7 +315,7 @@ class ProductRegistration extends PureComponent {
               )}
             </Form.Item>
             <Form.Item {...formItemLayout} label="Upload ảnh">
-              {getFieldDecorator('upload',{
+              {getFieldDecorator('upload', {
                 initialValue: [],
                 rules: [
                   {
@@ -318,7 +324,7 @@ class ProductRegistration extends PureComponent {
                   },
                 ],
               })(
-                <PicturesWall maxFile= {MAX_FILE_UPLOAD_PRODUCT} showPreviewIcon={true} showRemoveIcon={true} onChange={(info)=>this.handleChangeUpload(info)} fileList={fileList}>
+                <PicturesWall maxFile={MAX_FILE_UPLOAD_PRODUCT} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={fileList}>
                 </PicturesWall>
               )}
             </Form.Item>
@@ -333,7 +339,7 @@ class ProductRegistration extends PureComponent {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 Tạo sản phẩm
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={()=> router.push(`/production/list`)}>
+              <Button style={{ marginLeft: 8 }} onClick={() => router.push(`/production/list`)}>
                 Quay lại
               </Button>
             </FormItem>
