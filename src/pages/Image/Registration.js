@@ -27,7 +27,7 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 @connect(({ loading }) => ({
-  submitting: loading.effects['product/add'],
+  submitting: loading.effects['product/uploadAndAdd'],
 }))
 @Form.create()
 class ImageRegistration extends PureComponent {

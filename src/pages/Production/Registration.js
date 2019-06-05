@@ -34,7 +34,7 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 @connect(({ loading }) => ({
-  submitting: loading.effects['product/add'],
+  submitting: loading.effects['product/uploadAndAdd'],
 }))
 @Form.create()
 class ProductRegistration extends PureComponent {
@@ -133,7 +133,7 @@ class ProductRegistration extends PureComponent {
         if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
         else values.channel_50010_switch = "Đóng";
         dispatch({
-          type: 'product/add',
+          type: 'product/uploadAndAdd',
           payload: { ...values },
           callback: (res) => {
             if (res && res.id) {

@@ -132,12 +132,6 @@ class SampleRegistration extends PureComponent {
         else values.channel_50016_switch = "Đóng";
         if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
         else values.channel_50010_switch = "Đóng";
-        if (values.ps_add_new_product_from_sample_checkbox) {
-          dispatch({
-            type: 'product/add',
-            payload: { ...values },
-          });
-        }
         dispatch({
           type: 'sample/add',
           payload: { ...values },
@@ -195,12 +189,6 @@ class SampleRegistration extends PureComponent {
       >
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
-            <FormItem {...formItemLayout} label="">
-              {getFieldDecorator('ps_add_new_product_from_sample_checkbox', {
-              })(
-                <Checkbox>Tạo sản phẩm mới từ mẫu</Checkbox>
-              )}
-            </FormItem>
             <FormItem {...formItemLayout} label="Tên mẫu">
               {getFieldDecorator('ps_product_name', {
                 rules: [

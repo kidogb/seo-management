@@ -30,6 +30,9 @@ import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 import { hasRole, ROLES } from '@/common/permission';
 import { getAuthority } from '@/utils/authority';
+import SampleEditForm from './SampleEdit';
+import ProductEditForm from '../Production/Edit';
+import ProductCloneForm from '../Production/Clone';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -49,12 +52,12 @@ const getValue = obj =>
 @Form.create()
 class SampleTableList extends PureComponent {
   state = {
-    modalVisible: false,
-    updateModalVisible: false,
+    cloneModalVisible: false,
     expandForm: false,
     selectedRows: [],
     formValues: {},
     authority: undefined,
+    clonedData: {},
   };
 
   componentDidMount() {
@@ -161,7 +164,7 @@ class SampleTableList extends PureComponent {
       render: (record) => (
         <Button.Group>
           <Tooltip placement="topLeft" title='Xem sample'><Button type="primary" ghost icon="eye" onClick={() => this.previewSample(record.id)} /></Tooltip>
-          <Tooltip placement="topLeft" title='Tạo sản phẩm từ sample'><Button type="primary" ghost icon="copy" onClick={() => this.previewSample(record.id)} /></Tooltip>
+          {!this.canAddEditSamplePermission(this.state.authority) && <Tooltip placement="topLeft" title='Tạo sản phẩm từ sample'><Button type="primary" ghost icon="copy" onClick={() => this.displayCloneSampleModal(record)} /></Tooltip>}
           {this.canAddEditSamplePermission(this.state.authority) && <Tooltip placement="topLeft" title='Xoá sample'><Button type="danger" icon="delete" ghost onClick={() => this.handleRemoveSample(record.id)} /></Tooltip>}
         </Button.Group>
       ),
@@ -199,6 +202,18 @@ class SampleTableList extends PureComponent {
     });
   };
 
+  displayCloneSampleModal = record => {
+    this.setState({
+      cloneModalVisible: true,
+      clonedData: record,
+    });
+  }
+  hideCloneSampleModal = () => {
+    this.setState({
+      cloneModalVisible: false,
+      clonedData: {},
+    });
+  }
   previewSample = id => {
     router.push(`/sample/${id}/detail`);
   };
@@ -360,7 +375,7 @@ class SampleTableList extends PureComponent {
       sample: { data, totalData },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, authority } = this.state;
+    const { selectedRows, cloneModalVisible, authority, clonedData } = this.state;
     return (
       <PageHeaderWrapper title="Danh sách mẫu">
         <Card bordered={false}>
@@ -372,6 +387,20 @@ class SampleTableList extends PureComponent {
               </Button>}
               {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport={false} excelData={selectedRows} sheetName='Sample' filename='export_sample' />}
             </div>
+            {cloneModalVisible && <Modal
+              title="Copy Sample"
+              style={{ top: 20 }}
+              visible={true}
+              width='80%'
+              // onOk={() => this.setModal1Visible(false)}
+              footer={[
+                null,
+                null,
+              ]}
+              onCancel={() => this.hideCloneSampleModal()}
+            >
+              <ProductCloneForm data={clonedData} onReset={()=>this.hideCloneSampleModal()}></ProductCloneForm>
+            </Modal>}
             <StandardTable
               scroll
               rowKey={record => record.id}

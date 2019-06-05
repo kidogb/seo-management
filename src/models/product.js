@@ -40,7 +40,7 @@ export default {
       });
       if (callback) callback(response);
     },
-    *add({ payload, callback }, { call, put }) {
+    *uploadAndAdd({ payload, callback }, { call, put }) {
       try {
       const fileList = payload.upload.fileList;
       const length = fileList.length;
@@ -101,6 +101,15 @@ export default {
           description: { error }
         });
       }
+    },
+    *add({ payload, callback }, { call, put }) {
+      if (payload && payload.upload) payload.upload = [];
+      const response = yield call(addProduct, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeProduct, payload);
