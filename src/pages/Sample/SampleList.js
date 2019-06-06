@@ -60,6 +60,7 @@ class SampleTableList extends PureComponent {
     formValues: {},
     authority: undefined,
     clonedData: {},
+    page: 1,
   };
 
   componentDidMount() {
@@ -180,7 +181,7 @@ class SampleTableList extends PureComponent {
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const { formValues, page } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -197,7 +198,9 @@ class SampleTableList extends PureComponent {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-
+    this.setState({
+      page: pagination.current,
+    });
     dispatch({
       type: 'sample/fetch',
       payload: params,
@@ -295,7 +298,7 @@ class SampleTableList extends PureComponent {
 
   handleRemoveSample = id => {
     const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+    const { selectedRows, page } = this.state;
     dispatch({
       type: 'sample/remove',
       payload: id,
@@ -309,7 +312,7 @@ class SampleTableList extends PureComponent {
           });
           dispatch({
             type: 'sample/fetch',
-            payload: {},
+            payload: {page},
           });
           dispatch({
             type: 'sample/fetchAll',

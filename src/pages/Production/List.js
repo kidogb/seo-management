@@ -56,6 +56,7 @@ class ProductTableList extends PureComponent {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    page: 1,
   };
 
   columns = [
@@ -178,7 +179,9 @@ class ProductTableList extends PureComponent {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-
+    this.setState({
+      page: pagination.current,
+    });
     dispatch({
       type: 'product/fetch',
       payload: params,
@@ -288,7 +291,7 @@ class ProductTableList extends PureComponent {
 
   handleRemoveProduct = id => {
     const { dispatch } = this.props;
-    const {selectedRows} = this.state;
+    const {selectedRows, page} = this.state;
     dispatch({
       type: 'product/remove',
       payload: id,
@@ -303,7 +306,7 @@ class ProductTableList extends PureComponent {
           });
           dispatch({
             type: 'product/fetch',
-            payload: {},
+            payload: {page},
           });
           dispatch({
             type: 'product/fetchAll',
