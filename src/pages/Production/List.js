@@ -22,6 +22,8 @@ import {
   Steps,
   Radio,
   Tooltip,
+  Popconfirm,
+  notification,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -240,6 +242,31 @@ class ProductTableList extends PureComponent {
     router.push(`/production/registration`);
   }
 
+  handleMultiRemoveProduct = () => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    dispatch({
+      type: 'product/multiRemove',
+      payload: selectedRows.map(row => row.id),
+      callback: () => {
+        notification.success({
+          message: "Xoá sản phẩm thành công!"
+        });
+        this.setState({
+          selectedRows: [],
+        });
+        dispatch({
+          type: 'product/fetch',
+          payload: {},
+        });
+        dispatch({
+          type: 'product/fetchAll',
+          payload: {},
+        });
+      }
+    })
+  }
+
   handleSearch = e => {
     e.preventDefault();
 
@@ -380,6 +407,11 @@ class ProductTableList extends PureComponent {
                 Thêm sản phẩm
               </Button>
               {data && data.results && selectedRows.length > 0 && <DownloadExcel excelData={selectedRows} sheetName='Product' filename='export_product' />}
+              { data && data.results && selectedRows.length > 0 && <Popconfirm title="Xoá sản phẩm đã chọn?" onConfirm={() => this.handleMultiRemoveProduct()}>
+                {<Button icon="delete" type="danger">
+                  Xoá sản phẩm
+              </Button>}
+              </Popconfirm>}
             </div>
             <StandardTable
               scroll

@@ -22,6 +22,8 @@ import {
   Steps,
   Radio,
   Tooltip,
+  notification,
+  Popconfirm,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -247,6 +249,31 @@ class SampleTableList extends PureComponent {
     router.push(`/sample/registration`);
   }
 
+  handleMultiRemoveSample = () => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    dispatch({
+      type: 'sample/multiRemove',
+      payload: selectedRows.map(row => row.id),
+      callback: () => {
+        notification.success({
+          message: "Xoá samples thành công!"
+        });
+        this.setState({
+          selectedRows: [],
+        });
+        dispatch({
+          type: 'sample/fetch',
+          payload: {},
+        });
+        dispatch({
+          type: 'sample/fetchAll',
+          payload: {},
+        });
+      }
+    })
+  }
+
   handleSearch = e => {
     e.preventDefault();
 
@@ -386,6 +413,12 @@ class SampleTableList extends PureComponent {
                 Thêm mẫu
               </Button>}
               {data && data.results && selectedRows.length > 0 && <DownloadExcel isProductExport={false} excelData={selectedRows} sheetName='Sample' filename='export_sample' />}
+              {this.canAddEditSamplePermission(authority) && data && data.results && selectedRows.length > 0 && <Popconfirm title="Xoá sample đã chọn?" onConfirm={() => this.handleMultiRemoveSample()}>
+                {<Button icon="delete" type="danger">
+                  Xoá samples
+              </Button>}
+              </Popconfirm>}
+
             </div>
             {cloneModalVisible && <Modal
               title="Copy Sample"
@@ -399,7 +432,7 @@ class SampleTableList extends PureComponent {
               ]}
               onCancel={() => this.hideCloneSampleModal()}
             >
-              <ProductCloneForm data={clonedData} onReset={()=>this.hideCloneSampleModal()}></ProductCloneForm>
+              <ProductCloneForm data={clonedData} onReset={() => this.hideCloneSampleModal()}></ProductCloneForm>
             </Modal>}
             <StandardTable
               scroll

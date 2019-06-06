@@ -137,6 +137,16 @@ export default {
         routerRedux.push(`/sample/${payload.id}/detail`));
       if (callback) callback();
     },
+    *multiRemove({ payload, callback }, { call, put }) {
+      yield payload.map (id => {
+        return call(removeSample, id);
+      });
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // });
+      if (callback) callback();
+    },
   },
 
   reducers: {

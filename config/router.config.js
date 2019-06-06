@@ -89,26 +89,6 @@ export default [
             hideInMenu: true,
             authority: ['Admin', 'Cộng tác viên'],
           },
-          // {
-          //   path: '/production/:id/variations/registration',
-          //   name: 'variations-registration',
-          //   component: './VariationsProduction/VariationsRegistration',
-          //   authority: ['Admin', 'Cộng tác viên'],
-          //   hideInMenu: true,
-          // },
-          // {
-          //   path: '/production/:id/variations/list',
-          //   name: 'variations-list',
-          //   component: './VariationsProduction/VariationsList',
-          //   authority: ['Admin', 'Cộng tác viên'],
-          //   hideInMenu: true,
-          // },
-          {
-            path: '/production/:id/images/list',
-            name: 'images-list',
-            component: './Image/ProductImageList',
-            hideInMenu: true,
-          }
         ]
       },
       //user
