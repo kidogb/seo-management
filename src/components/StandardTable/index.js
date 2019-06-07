@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Table, Alert } from 'antd';
 import styles from './index.less';
+import { PAGE_SIZE } from '@/common/constant';
 
 // function initTotalList(columns) {
 //   const totalList = [];
@@ -55,6 +56,7 @@ class StandardTable extends PureComponent {
   cleanSelectedKeys = () => {
     this.handleRowSelectChange([], []);
   };
+  
 
   render() {
     const { selectedRowKeys, checkedTotal } = this.state;
@@ -62,7 +64,7 @@ class StandardTable extends PureComponent {
     const { results = [], count, next, previous } = data;
     const pagination = {
       total: count,
-      pageSize: 10,
+      pageSize: PAGE_SIZE,
     };
     const paginationProps = {
       // showSizeChanger: true,

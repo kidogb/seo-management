@@ -19,7 +19,6 @@ import {
   message,
   Badge,
   Divider,
-  Steps,
   Radio,
   Tooltip,
   Popconfirm,
@@ -31,9 +30,9 @@ import PicturesWall from '@/components/Upload';
 import styles from './List.less';
 import DownloadExcel from '@/components/ExportExcel/DownloadExcel';
 import { ROLES, FORBIDDEN_PAGE_PATH, hasRole } from '@/common/permission';
+import { PAGE_SIZE } from '@/common/constant';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
@@ -152,11 +151,14 @@ class ProductTableList extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { formValues, page } = this.state;
     dispatch({
       type: 'product/fetch',
+      payload: {...formValues, page}
     });
     dispatch({
       type: 'product/fetchAll',
+      payload: formValues,
     });
   }
 
@@ -258,14 +260,7 @@ class ProductTableList extends PureComponent {
         this.setState({
           selectedRows: [],
         });
-        dispatch({
-          type: 'product/fetch',
-          payload: {},
-        });
-        dispatch({
-          type: 'product/fetchAll',
-          payload: {},
-        });
+        window.location.reload();
       }
     })
   }
@@ -290,8 +285,9 @@ class ProductTableList extends PureComponent {
   };
 
   handleRemoveProduct = id => {
-    const { dispatch } = this.props;
-    const {selectedRows, page} = this.state;
+    const { dispatch, product: { totalData } } = this.props;
+    const { selectedRows, page, formValues } = this.state;
+    const lastPage = (totalData.length % PAGE_SIZE === 1) && page !== 1 ? page - 1 :page;
     dispatch({
       type: 'product/remove',
       payload: id,
@@ -303,14 +299,15 @@ class ProductTableList extends PureComponent {
             selectedRows: selectedRows.filter(function (row) {
               return row.id !== id;
             }),
+            page: lastPage,
           });
           dispatch({
             type: 'product/fetch',
-            payload: {page},
+            payload: formValues,
           });
           dispatch({
             type: 'product/fetchAll',
-            payload: {},
+            payload: formValues,
           });
         } else {
           message.error('Không thể xoá sản phẩm!!');

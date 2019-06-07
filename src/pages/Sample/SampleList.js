@@ -35,6 +35,7 @@ import { getAuthority } from '@/utils/authority';
 import SampleEditForm from './SampleEdit';
 import ProductEditForm from '../Production/Edit';
 import ProductCloneForm from '../Production/Clone';
+import { PAGE_SIZE } from '@/common/constant';
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -65,15 +66,18 @@ class SampleTableList extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { formValues, page } = this.state;
     const authority = localStorage.getItem('antd-pro-authority');
     this.setState({
       authority: authority,
     });
     dispatch({
       type: 'sample/fetch',
+      payload: { ...formValues, page }
     });
     dispatch({
       type: 'sample/fetchAll',
+      payload: formValues,
     });
   }
 
@@ -181,7 +185,7 @@ class SampleTableList extends PureComponent {
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { formValues, page } = this.state;
+    const { formValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -265,40 +269,34 @@ class SampleTableList extends PureComponent {
         this.setState({
           selectedRows: [],
         });
-        dispatch({
-          type: 'sample/fetch',
-          payload: {},
-        });
-        dispatch({
-          type: 'sample/fetchAll',
-          payload: {},
-        });
+        window.location.reload();
       }
     })
   }
 
   handleSearch = e => {
     e.preventDefault();
-
     const { dispatch, form } = this.props;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
       this.setState({
         formValues: fieldsValue,
       });
-
       dispatch({
         type: 'sample/fetch',
+        payload: fieldsValue,
+      });
+      dispatch({
+        type: 'sample/fetchAll',
         payload: fieldsValue,
       });
     });
   };
 
   handleRemoveSample = id => {
-    const { dispatch } = this.props;
-    const { selectedRows, page } = this.state;
+    const { dispatch, sample: { totalData } } = this.props;
+    const { selectedRows, page, formValues } = this.state;
+    const lastPage = (totalData.length % PAGE_SIZE === 1) && page !== 1 ? page - 1 :page;
     dispatch({
       type: 'sample/remove',
       payload: id,
@@ -309,14 +307,15 @@ class SampleTableList extends PureComponent {
             selectedRows: selectedRows.filter(function (row) {
               return row.id !== id;
             }),
+            page: lastPage,
           });
           dispatch({
             type: 'sample/fetch',
-            payload: {page},
+            payload: formValues,
           });
           dispatch({
             type: 'sample/fetchAll',
-            payload: {},
+            payload: formValues,
           });
         } else {
           message.error('Không thể xoá mẫu!!')
@@ -405,7 +404,7 @@ class SampleTableList extends PureComponent {
       sample: { data, totalData },
       loading,
     } = this.props;
-    const { selectedRows, cloneModalVisible, authority, clonedData } = this.state;
+    const { selectedRows, cloneModalVisible, authority, clonedData, page } = this.state;
     return (
       <PageHeaderWrapper title="Danh sách mẫu">
         <Card bordered={false}>
