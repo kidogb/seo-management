@@ -131,9 +131,9 @@ class SampleDetailForm extends PureComponent {
             <FormItem {...formItemLayout} label="Mô tả mẫu">
               <TextArea
                 key="ps_sample_description"
-                style={{ minHeight: 32 }}
+                style={{ minHeight: 100 }}
                 placeholder="Mô tả mẫu"
-                autosize={{ minRows: 2, maxRows: 8 }}
+                autosize={{ minRows: 10, maxRows: 800 }}
                 value={data.ps_product_description}
                 readOnly
               />
