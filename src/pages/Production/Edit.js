@@ -293,7 +293,8 @@ class ProductEditForm extends PureComponent {
                 <TextArea
                   style={{ minHeight: 32, minWidth: 32 }}
                   placeholder="Nhập thông tin sản phẩm"
-                  rows={4}
+                  style={{ minHeight: 100 }}
+                  autosize={{ minRows: 10, maxRows: 800 }}
                 />
               )}
             </FormItem>
