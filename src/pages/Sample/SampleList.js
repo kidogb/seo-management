@@ -92,7 +92,7 @@ class SampleTableList extends PureComponent {
       title: 'Tên mẫu',
       key: 'product_name',
       // dataIndex: 'ps_product_name',
-      width: 200,
+      width: '20%',
       render: record => {
         return <a href='javascript:;' onClick={() => this.previewSample(record.id)}>{record.ps_product_name}</a>
       }
@@ -101,13 +101,13 @@ class SampleTableList extends PureComponent {
       title: 'Category',
       key: 'product_category',
       dataIndex: 'ps_category_list_id',
-      width: 100,
+      width: '10%',
     },
     {
       title: 'Ảnh',
       key: 'product_imgs',
       dataIndex: 'ps_imgs',
-      width: 1000,
+      width: '70%',
       render: ps_imgs => {
         let fileList = [];
         ps_imgs.map(ps_img => {
@@ -125,31 +125,31 @@ class SampleTableList extends PureComponent {
       title: 'Khối lượng(g)',
       key: 'product_weight',
       dataIndex: 'ps_product_weight',
-      width: 100,
+      width: '10%',
     },
     {
       title: 'Giá',
       key: 'product_price',
       dataIndex: 'ps_price',
-      width: 100,
+      width: '10%',
     },
     {
       title: 'Tồn kho',
       key: 'product_stock',
       dataIndex: 'ps_stock',
-      width: 20,
+      width: '10%',
     },
     {
       title: 'Thời gian ship (ngày)',
       key: 'product_days_to_ship',
       dataIndex: 'ps_days_to_ship',
-      width: 10,
+      width: '10%',
     },
     {
       title: 'Mô tả mẫu',
       key: 'product_description',
       dataIndex: 'ps_product_description',
-      width: 400,
+      width: '60%',
       onCell: () => {
         return {
           style: {
