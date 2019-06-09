@@ -252,7 +252,7 @@ class ProductEditForm extends PureComponent {
               })(<Input placeholder="Nhập tên sản phẩm" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="Ảnh sản phẩm">
-              {(fileList !== []) && getFieldDecorator('upload',
+              { getFieldDecorator('upload',
                 {
                   rules: [
                     {

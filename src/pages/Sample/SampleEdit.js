@@ -253,7 +253,7 @@ class SampleEditForm extends PureComponent {
               })(<Input placeholder="Nhập tên mẫu" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="Ảnh mẫu">
-              {(fileList !== []) && getFieldDecorator('upload',
+              {getFieldDecorator('upload',
                 {
                   rules: [
                     {
