@@ -311,7 +311,7 @@ class SampleTableList extends PureComponent {
           });
           dispatch({
             type: 'sample/fetch',
-            payload: formValues,
+            payload: { ...formValues, page: lastPage},
           });
           dispatch({
             type: 'sample/fetchAll',

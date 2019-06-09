@@ -303,7 +303,7 @@ class ProductTableList extends PureComponent {
           });
           dispatch({
             type: 'product/fetch',
-            payload: formValues,
+            payload: { ...formValues, page: lastPage},
           });
           dispatch({
             type: 'product/fetchAll',
