@@ -324,8 +324,8 @@ class SampleEditForm extends PureComponent {
                 <InputNumber
                   style={{ minHeight: 32, width: '100%' }}
                   placeholder="Nhập giá mẫu (VND)"
-                  formatter={value => `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={value => value.replace(/\đ\s?|(,*)/g, '')}
+                  formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={value => value.replace(/\$\s?|(,*)/g, '')}
                 />
               )}
             </FormItem>
