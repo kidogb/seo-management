@@ -113,6 +113,12 @@ export async function addUploadFile(params) {
   });
 }
 
+export async function removeUploadFile(id) {
+  return request_without_redirect(`/commonapis/fileuploads/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function fakeChartData() {
   return request('/api/fake_chart_data');
 }

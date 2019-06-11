@@ -1,4 +1,4 @@
-import { getUploadFile, getAllUploadFile, addUploadFile } from '@/services/api';
+import { getUploadFile, getAllUploadFile, addUploadFile, removeUploadFile } from '@/services/api';
 import { routerRedux } from 'dva/router';
 import { message, notification } from 'antd';
 import { MAX_FILE_UPLOAD_CONCURRENT } from '@/common/constant';
@@ -112,14 +112,14 @@ export default {
         });
       }
     },
-    // *remove({ payload, callback }, { call, put }) {
-    //   const response = yield call(removeRule, payload);
-    //   yield put({
-    //     type: 'save',
-    //     payload: response,
-    //   });
-    //   if (callback) callback();
-    // },
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(removeUploadFile, payload);
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // });
+      if (callback) callback(response);
+    },
   },
 
   reducers: {

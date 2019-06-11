@@ -16,6 +16,7 @@ import {
   message,
   Upload,
   Switch,
+  notification,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
@@ -140,10 +141,30 @@ class ProductEditForm extends PureComponent {
 
   handleRemoveUpload = (obj) => {
     const { fileList } = this.state;
-    const updatedFileList = fileList.filter(file => {
-      return file.id !== obj.uid;
+    const { dispatch } = this.props;
+    dispatch ({
+      type: 'fileUpload/remove',
+      payload: obj.uid,
+      callback: (res) => {
+        if (!res) {
+          notification.success({
+            message: "Xoá ảnh thành công!"
+          })
+          const updatedFileList = fileList.filter(file => {
+            return file.id !== obj.uid;
+          });
+          this.setState({ fileList: updatedFileList });
+        } else {
+          notification.error({
+            message: "Có lỗi khi xoá ảnh! Vui lòng thử lại"
+          });
+        }
+      }
     });
-    this.setState({ fileList: updatedFileList });
+    // const updatedFileList = fileList.filter(file => {
+    //   return file.id !== obj.uid;
+    // });
+    // this.setState({ fileList: updatedFileList });
   }
 
   getProductImgs = files => {
