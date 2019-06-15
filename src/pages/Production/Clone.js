@@ -58,6 +58,7 @@ class ProductCloneForm extends PureComponent {
       return { product: product_id, ...newVariation };
     });
     const payload = variationList.map(variation => {
+      if (variation.sample) variation.sample = null;
       return { ...variation, product: product_id }
     });
     dispatch({
@@ -232,7 +233,7 @@ class ProductCloneForm extends PureComponent {
             })(<Input placeholder="Nhập tên sản phẩm" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="Ảnh sản phẩm">
-            {(fileList !== []) && getFieldDecorator('upload',
+            {getFieldDecorator('upload',
               {
                 rules: [
                   {
