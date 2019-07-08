@@ -17,6 +17,7 @@ import {
   Upload,
   Switch,
   notification,
+  Modal,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
@@ -24,6 +25,7 @@ import PicturesWall from '@/components/Upload';
 import { hasRole, FORBIDDEN_PAGE_PATH, ROLES } from '@/common/permission';
 import VariationTable from '@/components/VariationTable';
 import { MAX_FILE_UPLOAD_PRODUCT } from '@/common/constant';
+import SelectCoverImageModal from '@/components/PhotoGallery/SelectCoverImageModal';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -37,6 +39,8 @@ class ProductCloneForm extends PureComponent {
     fileList: [], // for old images file
     variationList: [], // for variation
     count: 0,  // for count nunmber of new variation
+    selectCoverModalVisible: false, // for display modal to select image cover,
+    coverImage: null, // for save cover image
   };
 
   componentDidMount() {
@@ -84,10 +88,11 @@ class ProductCloneForm extends PureComponent {
   handleSubmit = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
-    const { fileList, variationList } = this.state;
+    const { fileList, variationList, coverImage } = this.state;
+    const profile_image_id = coverImage ? coverImage.id : null;
     let ps_imgs = [];
     fileList.map(file => ps_imgs.push(file.id));
-    if (ps_imgs.length > MAX_FILE_UPLOAD_PRODUCT){
+    if (ps_imgs.length > MAX_FILE_UPLOAD_PRODUCT) {
       notification.error({
         message: `Quá số ảnh quy định!`,
         description: `Chỉ được chọn tối đa ${MAX_FILE_UPLOAD_PRODUCT} ảnh`,
@@ -111,7 +116,7 @@ class ProductCloneForm extends PureComponent {
         else values.channel_50010_switch = "Đóng";
         dispatch({
           type: 'product/add',
-          payload: { ...values, ps_imgs },
+          payload: { ...values, ps_imgs, profile_image_id },
           callback: (res) => {
             if (res && res.id) {
               if (variationList && variationList.length > 0) {
@@ -157,6 +162,22 @@ class ProductCloneForm extends PureComponent {
     return defaultFileList;
   }
 
+  getImgsForCoverSelection = files => {
+    let defaultFileList = [];
+    files.map(file => {
+      if (file.id)
+        defaultFileList.push({
+          id: file.id,
+          name: file.title,
+          // status: 'done',
+          src: file.file,
+          width: 1,
+          height: 1,
+        });
+    });
+    return defaultFileList;
+  }
+
   handleDelete = key => {
     const { dispatch } = this.props;
     const variationList = [...this.state.variationList];
@@ -190,6 +211,22 @@ class ProductCloneForm extends PureComponent {
     this.setState({ variationList: newData });
   };
 
+  showSelectCoverImage = () => {
+    this.setState({
+      selectCoverModalVisible: true,
+    });
+  }
+
+  hideSelectCoverImage = () => {
+    this.setState({
+      selectCoverModalVisible: false,
+    });
+  }
+  setSelectCoverImage = (img) => {
+    this.setState({
+      coverImage: img,
+    });
+  }
   render() {
     const { submitting } = this.props;
     const {
@@ -217,7 +254,7 @@ class ProductCloneForm extends PureComponent {
     const {
       data
     } = this.props;
-    const { fileList, newFileList, variationList } = this.state;
+    const { fileList, newFileList, variationList, selectCoverModalVisible, coverImage } = this.state;
     return (
       <Card bordered={false}>
         <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 8 }}>
@@ -253,6 +290,26 @@ class ProductCloneForm extends PureComponent {
               </PicturesWall>
             </div>)
             }
+          </FormItem>
+          <FormItem {...formItemLayout} label="Chọn ảnh bìa">
+            <div>
+              {coverImage ? <img alt="cover-img" style={{ width: '20%', height: 'auto' }} src={coverImage.src} /> : null}
+              <Button ghost icon="plus" onClick={() => this.showSelectCoverImage()} size='large' style={{ marginLeft: 5 }}></Button>
+              {selectCoverModalVisible && <Modal
+                title="Chọn ảnh bìa"
+                style={{ top: 20 }}
+                visible={true}
+                width='80%'
+                onOk={() => this.setModal1Visible(false)}
+                footer={[
+                  null,
+                  null,
+                ]}
+                onCancel={() => this.hideSelectCoverImage()}
+              >
+                <SelectCoverImageModal photos={this.getImgsForCoverSelection(fileList)} onSelectCover={(img) => this.setSelectCoverImage(img)} onCancel={this.hideSelectCoverImage} onOk={(img) => { this.setSelectCoverImage(img); this.hideSelectCoverImage() }} ></SelectCoverImageModal>
+              </Modal>}
+            </div>
           </FormItem>
           <FormItem {...formItemLayout} label="Thông tin sản phẩm">
             {getFieldDecorator('ps_product_description', {
@@ -395,7 +452,7 @@ class ProductCloneForm extends PureComponent {
               </Button>
           </FormItem>
         </Form>
-      </Card>
+      </Card >
     );
   }
 }
