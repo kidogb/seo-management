@@ -24,7 +24,7 @@ export default class PicturesWall extends React.Component {
 
   render() {
     const { previewVisible, previewImage,  } = this.state;
-    const {maxFile=9, displayUploadButton=true, onChange={}, onRemove={}, fileList=[], showPreviewIcon=true, showRemoveIcon=true} = this.props;
+    const {multiple=true, maxFile=9, displayUploadButton=true, onChange={}, onRemove={}, fileList=[], showPreviewIcon=true, showRemoveIcon=true} = this.props;
     const uploadButton = displayUploadButton && (
       <div>
         <Icon type="plus" />
@@ -40,7 +40,7 @@ export default class PicturesWall extends React.Component {
           onChange={onChange}
           showUploadList={{ showPreviewIcon, showRemoveIcon }}
           onRemove={onRemove}
-          multiple
+          multiple={multiple}
         >
         {fileList.length >= maxFile ? null : uploadButton}
         </Upload>

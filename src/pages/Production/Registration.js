@@ -41,6 +41,7 @@ class ProductRegistration extends PureComponent {
   state = {
     fileList: [
     ],
+    coverImg: [],
     createProductCheck: false,
     variationList: [],
     count: 0,
@@ -48,9 +49,16 @@ class ProductRegistration extends PureComponent {
 
   handleChangeUpload = (info) => {
     let fileList = info.fileList;
+    const { coverImg } = this.state;
     // 1. Limit the number of uploaded files
-    if (fileList.length > MAX_FILE_UPLOAD_PRODUCT) fileList = fileList.slice(-1 * MAX_FILE_UPLOAD_PRODUCT);
+    if (fileList.length > MAX_FILE_UPLOAD_PRODUCT - coverImg.length) fileList = fileList.slice(-1 * (MAX_FILE_UPLOAD_PRODUCT - coverImg.length));
     this.setState({ fileList });
+  }
+  handleChangeUploadCover = (info) => {
+    let coverImg = info.fileList;
+    // 1. Limit the number of cover uploaded files
+    if (coverImg.length > 1) coverImg = coverImg.slice(-1);
+    this.setState({ coverImg });
   }
 
   handleDelete = key => {
@@ -160,7 +168,7 @@ class ProductRegistration extends PureComponent {
 
   render() {
     const { submitting } = this.props;
-    const { fileList, createProductCheck, variationList } = this.state;
+    const { fileList, createProductCheck, variationList, coverImg } = this.state;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -314,7 +322,15 @@ class ProductRegistration extends PureComponent {
                 <Switch />
               )}
             </Form.Item>
-            <Form.Item {...formItemLayout} label="Upload ảnh">
+            <Form.Item {...formItemLayout} label="Chọn ảnh bìa">
+              {getFieldDecorator('upload_cover', {
+                initialValue: [],
+              })(
+                <PicturesWall multiple={false} maxFile={fileList.length === MAX_FILE_UPLOAD_PRODUCT ? 0 : 1} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUploadCover(info)} fileList={coverImg} >
+                </PicturesWall>
+              )}
+            </Form.Item>
+            <Form.Item {...formItemLayout} label="Upload ảnh khác">
               {getFieldDecorator('upload', {
                 initialValue: [],
                 rules: [
@@ -324,7 +340,7 @@ class ProductRegistration extends PureComponent {
                   },
                 ],
               })(
-                <PicturesWall maxFile={MAX_FILE_UPLOAD_PRODUCT} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={fileList}>
+                <PicturesWall maxFile={MAX_FILE_UPLOAD_PRODUCT - coverImg.length} showPreviewIcon={true} showRemoveIcon={true} onChange={(info) => this.handleChangeUpload(info)} fileList={fileList}>
                 </PicturesWall>
               )}
             </Form.Item>
