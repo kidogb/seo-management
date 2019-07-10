@@ -29,13 +29,16 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 
 @connect(({ loading, product, fileUpload }) => ({
-  submitting: loading.effects['fileUpload/addMultiFile'],
+  submitting_with_cover: loading.effects['fileUpload/addSingleFile'],
+  submitting_without_cover: loading.effects['fileUpload/addMultiFile'],
   listFileId: fileUpload.listFileId,
   product,
 }))
 @Form.create()
 class ProductEditForm extends PureComponent {
   state = {
+    defCoverImg: [],
+    coverImg: [], // for cover image
     fileList: [], // for old images file
     newFileList: [], //for new images file
     variationList: [], // for variation
@@ -51,26 +54,30 @@ class ProductEditForm extends PureComponent {
       type: 'product/fetchDetail',
       payload: id,
       callback: (res) => {
-        if (res.id)
+        if (res.id) {
+          const defCoverImg = res.ps_imgs.filter(img => img.id === res.profile_image_id);
+          const fileList = res.ps_imgs.filter(img => img.id !== res.profile_image_id);
           this.setState({
-            fileList: res.ps_imgs,
+            defCoverImg: defCoverImg,
+            fileList,
             variationList: res.variation_product.map((v, i) => { return { ...v, key: i } }),
             count: res.variation_product.length,
             numberOldVariation: res.variation_product.length,
           });
+        }
       }
-      });
+    });
   }
 
   handleSubmit = e => {
     e.preventDefault();
     const id = this.props.match.params.id;
     const { dispatch, form, product: { data } } = this.props;
-    const { fileList, newFileList, variationList, numberOldVariation } = this.state;
+    const { fileList, newFileList, variationList, numberOldVariation, coverImg, defCoverImg } = this.state;
     let ps_imgs = [];
-
-    let oldVariationList =[];
+    let oldVariationList = [];
     let newVariationList = [];
+    let profile_image_id = null;
     variationList.filter(variation => {
       if (variation.id) {
         oldVariationList.push({ ...variation, product: id });
@@ -78,15 +85,72 @@ class ProductEditForm extends PureComponent {
         newVariationList.push({ ...variation, product: id });
       }
     });
-
-    // if (fileList.length > 0) {
     fileList.map(file => ps_imgs.push(file.id));
-    // }
-    // if (newFileList.length > 0) {
-    // upload images
-    dispatch({
+    if (defCoverImg && defCoverImg.length > 0) defCoverImg.map(img => {
+      ps_imgs.push(img.id);
+      profile_image_id = img.id;
+    });
+    if (coverImg && coverImg.length > 0)
+      dispatch({
+        type: 'fileUpload/addSingleFile',
+        payload: coverImg[0],
+        callback: (res => {
+          if (res && res.id) {
+            ps_imgs.push(res.id);
+            profile_image_id = res.id;
+          } else {
+            notification.error({
+              message: "Lỗi upload ảnh cover!",
+              description: "Có lỗi trong quá trình upload cover!"
+            });
+          }
+          dispatch({
+            type: 'fileUpload/addMultiFile',
+            payload: [...newFileList],
+            callback: (fileListId => {
+              fileListId.map(id => ps_imgs.push(id));
+              form.setFieldsValue({
+                upload: ps_imgs,
+              });
+              form.validateFieldsAndScroll((err, values) => {
+                if (!err) {
+                  if (values.channel_50012_switch) values.channel_50012_switch = "Mở";
+                  else values.channel_50012_switch = "Đóng";
+                  if (values.channel_50011_switch) values.channel_50011_switch = "Mở";
+                  else values.channel_50011_switch = "Đóng";
+                  if (values.channel_50015_switch) values.channel_50015_switch = "Mở";
+                  else values.channel_50015_switch = "Đóng";
+                  if (values.channel_50016_switch) values.channel_50016_switch = "Mở";
+                  else values.channel_50016_switch = "Đóng";
+                  if (values.channel_50010_switch) values.channel_50010_switch = "Mở";
+                  else values.channel_50010_switch = "Đóng";
+                  if (oldVariationList.length > 0) {
+                    dispatch({
+                      type: 'variations/updateMultiVariation',
+                      // payload: variationList.slice(0, numberOldVariation),
+                      payload: oldVariationList,
+                    });
+                  }
+                  if (newVariationList.length > 0) {
+                    dispatch({
+                      type: 'variations/addMultiVariation',
+                      // payload: variationList.slice(numberOldVariation, variationList.length),
+                      payload: newVariationList,
+                    })
+                  }
+                  dispatch({
+                    type: 'product/update',
+                    payload: { ...values, id, ps_imgs, profile_image_id },
+                  });
+                }
+              });
+            }),
+          });
+        })
+      });
+    else dispatch({
       type: 'fileUpload/addMultiFile',
-      payload: newFileList,
+      payload: [...newFileList],
       callback: (fileListId => {
         fileListId.map(id => ps_imgs.push(id));
         form.setFieldsValue({
@@ -120,7 +184,7 @@ class ProductEditForm extends PureComponent {
             }
             dispatch({
               type: 'product/update',
-              payload: { ...values, id, ps_imgs },
+              payload: { ...values, id, ps_imgs, profile_image_id },
             });
           }
         });
@@ -129,10 +193,20 @@ class ProductEditForm extends PureComponent {
     // }
   }
 
+  handleChangeUploadCover = (info) => {
+    const { defCoverImg, coverImg, fileList, newFileList } = this.state;
+    let newCoverImg = info.fileList;
+    const limit = (MAX_FILE_UPLOAD_PRODUCT - fileList.length - newFileList.length) === 0 ? 0 : 1;
+    // 1. Limit the number of uploaded files
+    if (limit === 0) newCoverImg = [];
+    else newCoverImg = newCoverImg.slice(-1 * limit);
+    this.setState({ coverImg: newCoverImg, defCoverImg: [] });
+  }
+
   handleChangeUpload = (info) => {
-    const { fileList } = this.state;
+    const { fileList, coverImg, defCoverImg } = this.state;
     let newFileList = info.fileList;
-    const limit = MAX_FILE_UPLOAD_PRODUCT - fileList.length;
+    const limit = MAX_FILE_UPLOAD_PRODUCT - fileList.length - coverImg.length - defCoverImg.length;
     // 1. Limit the number of uploaded files
     if (limit === 0) newFileList = [];
     else if (newFileList.length > limit) newFileList = newFileList.slice(-1 * limit);
@@ -142,7 +216,7 @@ class ProductEditForm extends PureComponent {
   handleRemoveUpload = (obj) => {
     const { fileList } = this.state;
     const { dispatch } = this.props;
-    dispatch ({
+    dispatch({
       type: 'fileUpload/remove',
       payload: obj.uid,
       callback: (res) => {
@@ -227,7 +301,7 @@ class ProductEditForm extends PureComponent {
 
 
   render() {
-    const { submitting } = this.props;
+    const { submitting_with_cover, submitting_without_cover } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue }
     } = this.props;
@@ -254,7 +328,7 @@ class ProductEditForm extends PureComponent {
       product: { data },
     } = this.props;
     const id = this.props.match.params.id;
-    const { fileList, newFileList, variationList } = this.state;
+    const { defCoverImg, coverImg, fileList, newFileList, variationList } = this.state;
     return (
       <PageHeaderWrapper
         title="Cập nhật thông tin sản phẩm"
@@ -272,8 +346,26 @@ class ProductEditForm extends PureComponent {
                 ],
               })(<Input placeholder="Nhập tên sản phẩm" />)}
             </FormItem>
+            <FormItem {...formItemLayout} label="Ảnh cover">
+              {getFieldDecorator('upload_cover',
+                {
+                  initialValue: [],
+                }
+              )(<div>
+                <PicturesWall displayUploadButton={true}
+                  showPreviewIcon={true}
+                  showRemoveIcon={true}
+                  onChange={(info) => this.handleChangeUploadCover(info)}
+                  fileList={defCoverImg.length === 0 ? coverImg : this.getProductImgs(defCoverImg)}
+                  maxFile={MAX_FILE_UPLOAD_PRODUCT - fileList.length - newFileList.length === 0 ? 0 : 1}
+                  displayUploadButton={MAX_FILE_UPLOAD_PRODUCT - fileList.length === 0 ? false : true}
+                  multiple={false} >
+                </PicturesWall>
+              </div>)
+              }
+            </FormItem>
             <FormItem {...formItemLayout} label="Ảnh sản phẩm">
-              { getFieldDecorator('upload',
+              {getFieldDecorator('upload',
                 {
                   rules: [
                     {
@@ -294,7 +386,7 @@ class ProductEditForm extends PureComponent {
                   showRemoveIcon={true}
                   onChange={(info) => this.handleChangeUpload(info)}
                   fileList={newFileList}
-                  maxFile={fileList ? MAX_FILE_UPLOAD_PRODUCT - fileList.length : 0}
+                  maxFile={MAX_FILE_UPLOAD_PRODUCT - fileList.length - coverImg.length - defCoverImg.length}
                   displayUploadButton={MAX_FILE_UPLOAD_PRODUCT - fileList.length === 0 ? false : true} >
                 </PicturesWall>
               </div>)
@@ -435,9 +527,14 @@ class ProductEditForm extends PureComponent {
               {/* <Button type="primary" htmlType="submit" loading={submitting}>
                 Chỉnh sửa
               </Button> */}
-              <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }} loading={submitting}>
-                Câp nhật
-              </Button>
+              {(coverImg && coverImg.length > 0) &&
+                <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }} loading={submitting_with_cover}>
+                  Câp nhật
+              </Button>}
+              {(coverImg && coverImg.length === 0) &&
+                <Button type="primary" htmlType="submit" style={{ marginLeft: 8 }} loading={submitting_without_cover}>
+                  Câp nhật
+              </Button>}
               <Button style={{ marginLeft: 8 }} onClick={() => this.goBackToListScreen()}>
                 Quay lại
               </Button>

@@ -47,6 +47,19 @@ export default {
       yield put(
         routerRedux.push(`/image/list`));
     },
+    *addSingleFile({ payload, callback }, { call, put }) {
+      const response = yield call(addUploadFile, {
+        title: payload.name,
+        note: payload.name,
+        file: payload.originFileObj,
+      });
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+      // message.success('Thêm sản phẩm thành công');
+    },
     *addMultiFile({ payload, callback }, { call, put }) {
       let ps_imgs = [];
       // const uploadResList = yield payload.map(file =>{
